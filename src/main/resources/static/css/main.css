@@ -563,15 +563,29 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
 }
 
+.mobile-sidebar-toggle {
+  display: none !important;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
 .topbar-actions {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-left: auto;
 }
 
 .topbar-actions .btn-theme-toggle,
 .topbar-actions .btn-topbar-refresh,
-.topbar-actions .navbar-lang-container select,
 .topbar-actions .btn,
 .topbar-actions .user-chip {
   height: 40px !important;
@@ -596,6 +610,12 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center !important;
   justify-content: center !important;
   border-radius: var(--radius-md, 8px) !important;
+}
+
+.topbar-actions .navbar-lang-container {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
 }
 
 .topbar-actions .user-chip {

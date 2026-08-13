@@ -16,12 +16,8 @@
   <div class="app-wrapper">
     <!-- Topbar -->
     <header class="topbar">
-      <a href="/admin.html" class="brand" style="text-decoration: none;">
-        <div class="brand-icon" style="background: linear-gradient(135deg, #EF4444, #DC2626); box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);">🛡️</div>
-        <div>
-          <div class="brand-tag mono">SUPER ADMIN GOVERNANCE</div>
-        </div>
-      </a>
+      <button class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()" title="Menu">☰</button>
+
       <div class="topbar-actions">
         <!-- Day / Night Theme Toggle Button -->
         <button class="btn-theme-toggle btn-icon-square" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
@@ -29,7 +25,7 @@
         </button>
 
         <!-- Language Toggle -->
-        <div class="navbar-lang-container btn-icon-square"></div>
+        <div class="navbar-lang-container"></div>
 
         <!-- Global Topbar Refresh Button -->
         <button class="btn-topbar-refresh btn-icon-square" id="btn-global-refresh" onclick="triggerAdminRefresh()" title="Refresh Telematics & Audit Registry">
