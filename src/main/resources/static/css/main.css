@@ -566,7 +566,30 @@ h1, h2, h3, h4, h5, h6 {
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
+}
+
+.topbar-actions .btn-theme-toggle,
+.topbar-actions .btn-topbar-refresh,
+.topbar-actions .navbar-lang-container select,
+.topbar-actions .btn,
+.topbar-actions .user-chip {
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: var(--radius-md, 8px) !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  padding: 0 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+}
+
+.topbar-actions .user-chip {
+  padding: 0 10px 0 6px !important;
+  border-radius: var(--radius-md, 8px) !important;
 }
 
 .user-chip {
@@ -576,7 +599,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 6px 14px 6px 8px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   color: var(--text-primary);
 }
 

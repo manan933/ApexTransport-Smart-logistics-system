@@ -31,41 +31,32 @@
           🚚</div>
         <div>
           <div class="brand-name brand-apex">Apex Transport</div>
-          <div class="brand-tag mono" data-i18n="tag_driver">PILOT FLIGHT DECK</div>
+          <div class="brand-tag mono">DRIVER</div>
         </div>
       </div>
 
       <div class="topbar-actions">
         <!-- Day / Night Theme Toggle Button -->
         <button class="btn-theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
-          ☀️ <span class="theme-label">Day</span>
+          ☀️ <span class="theme-label">Theme</span>
         </button>
-
-        <!-- Live HUD Clock (Desktop) -->
-        <div class="live-clock-widget" style="margin-bottom: 0; padding: 6px 12px;">
-          <div class="live-hud-clock-time" style="font-size: 0.95rem;">00:00:00</div>
-          <span style="margin: 0 6px; color: var(--border-prominent);">|</span>
-          <div class="live-hud-clock-date" style="font-size: 0.75rem;">TODAY</div>
-        </div>
 
         <!-- Language Toggle -->
         <div class="navbar-lang-container"></div>
 
         <!-- Global Topbar Refresh Button -->
         <button class="btn-topbar-refresh" id="btn-global-refresh" onclick="triggerDriverRefresh()" title="Refresh Active Loads & Missions">
-          <span class="refresh-icon">🔄</span> <span class="refresh-label" data-i18n="btn_refresh">Refresh</span>
+          <span class="refresh-icon">🔄</span>
         </button>
 
         <a href="/profile.html" class="user-chip" style="text-decoration: none;">
-          <div class="user-avatar" style="border-color: rgba(245, 158, 11, 0.4); color: var(--amber-light);"
-            id="nav-avatar">D</div>
+          <div class="user-avatar" style="border-color: rgba(245, 158, 11, 0.4); color: var(--amber-light);" id="nav-avatar">D</div>
           <div>
-            <div style="font-weight: 700; font-size: 0.85rem;" id="nav-username">Pilot Driver</div>
-            <div style="font-size: 0.72rem; color: var(--amber-light); font-weight: 700;" id="nav-user-rating">⭐ 5.0 (Pilot)</div>
+            <div style="font-weight: 700; font-size: 0.85rem;" id="nav-username">Driver</div>
           </div>
         </a>
 
-        <button class="btn btn-secondary btn-sm" onclick="api.logout()" data-i18n="nav_logout">Logout</button>
+        <button class="btn btn-secondary btn-sm" onclick="api.logout()">Logout</button>
       </div>
     </header>
 
@@ -75,19 +66,19 @@
         <div class="sidebar-nav">
           <div class="sidebar-item active" id="side-cockpit-btn" onclick="switchDriverTab('cockpit')">
             <span class="sidebar-item-icon">🧭</span>
-            <span data-i18n="tab_active_job">Active Mission & Job</span>
+            <span>Active</span>
           </div>
           <div class="sidebar-item" id="side-available-btn" onclick="switchDriverTab('available')">
             <span class="sidebar-item-icon">📋</span>
-            <span data-i18n="tab_available_loads">Available Freight Loads</span>
+            <span>Board</span>
           </div>
           <div class="sidebar-item" id="side-logs-btn" onclick="switchDriverTab('logs')">
             <span class="sidebar-item-icon">📜</span>
-            <span data-i18n="tab_activity_logs">Trip & Audit Logs</span>
+            <span>Logs</span>
           </div>
           <a href="/profile.html" class="sidebar-item" style="text-decoration: none;">
             <span class="sidebar-item-icon">👤</span>
-            <span data-i18n="nav_profile">Driver Profile & Fleet</span>
+            <span>Profile</span>
           </a>
         </div>
 
