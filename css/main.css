@@ -1839,16 +1839,13 @@ select.form-control option {
   }
 
   .topbar-actions .navbar-lang-container {
-    width: 38px !important;
     height: 36px !important;
   }
 
   .topbar-actions .navbar-lang-container select {
-    width: 100% !important;
     height: 36px !important;
-    padding: 0 4px !important;
-    font-size: 0.72rem !important;
-    text-align: center !important;
+    padding: 0 8px !important;
+    font-size: 0.75rem !important;
   }
 
   .topbar .user-chip {
@@ -1914,6 +1911,12 @@ select.form-control option {
     font-size: 0.95rem !important;
     border-radius: var(--radius-md) !important;
     gap: 12px !important;
+  }
+  
+  .sidebar-nav {
+    flex-direction: column !important;
+    overflow-x: hidden !important;
+    gap: 8px !important;
   }
 
   /* 3. Universal Mobile Bottom Navigation Bar */
@@ -2076,7 +2079,12 @@ select.form-control option {
   .table-container table,
   .table-responsive table {
     width: 100% !important;
-    min-width: 580px !important;
+    min-width: 100% !important;
+  }
+
+  .table th, .table td {
+    white-space: normal !important;
+    word-break: break-word !important;
   }
 
   th, td {
@@ -2198,10 +2206,16 @@ select.form-control option {
   /* Form Stack on Mobile */
   .form-row,
   .grid-form-2,
-  .form-grid {
+  .form-grid,
+  .modal-body div[style*="grid-template-columns"] {
     display: flex !important;
     flex-direction: column !important;
-    gap: 8px !important;
+    gap: 12px !important;
+  }
+  
+  .telematics-radar-grid {
+    display: flex !important;
+    flex-direction: column !important;
   }
 
   .form-group input,
