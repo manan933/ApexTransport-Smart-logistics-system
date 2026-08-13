@@ -173,6 +173,71 @@
   --radius-full: 9999px;
 }
 
+[data-theme="trucker"] {
+  /* Industrial Heavy Freight Trucker Theme (Safety Amber & Steel Metallic) */
+  --bg-base: #0F141C;
+  --bg-subtle: #151C27;
+  --bg-surface: #1B2332;
+  --bg-surface-elevated: #232D3F;
+  --bg-surface-hover: #2C384E;
+  --bg-glass: rgba(27, 35, 50, 0.94);
+
+  /* Contrast Accents (Highway Safety Amber & Industrial Gold) */
+  --accent-contrast: #FF9800;
+  --accent-contrast-bg: #FF9800;
+  --accent-contrast-text: #000000;
+  --accent-contrast-border: #FFB74D;
+
+  /* Primary Accent: Safety Warning Amber (#FF9800 / #F57C00) */
+  --emerald-primary: #FF9800;
+  --emerald-hover: #F57C00;
+  --emerald-light: #FFB74D;
+  --emerald-subtle: rgba(255, 152, 0, 0.16);
+  --emerald-glow: rgba(255, 152, 0, 0.35);
+
+  /* Secondary Accent: Industrial Caution Gold (#FFC107) */
+  --amber-primary: #FFC107;
+  --amber-hover: #FFA000;
+  --amber-light: #FFE082;
+  --amber-subtle: rgba(255, 193, 7, 0.16);
+  --amber-glow: rgba(255, 193, 7, 0.35);
+
+  /* Alert / Red Hazard */
+  --coral-primary: #FF5252;
+  --coral-hover: #FF1744;
+  --coral-subtle: rgba(255, 82, 82, 0.2);
+
+  /* Utility Blue */
+  --blue-light: #64B5F6;
+
+  /* Typography: High Visibility Industrial Slate */
+  --text-primary: #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-inverse: #0F172A;
+
+  /* Borders & Dividers */
+  --border-subtle: #2D3748;
+  --border-prominent: #4A5568;
+  --border-emerald: #FF9800;
+  --border-amber: #FFC107;
+
+  /* Shadows (Metallic Industrial Shadow & Safety Amber Glow) */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.65);
+  --shadow-glow-emerald: 0 0 24px rgba(255, 152, 0, 0.3);
+  --shadow-glow-amber: 0 0 24px rgba(255, 193, 7, 0.3);
+
+  /* Corner Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-xxl: 24px;
+  --radius-full: 9999px;
+}
+
 /* ==========================================================================
    NEO-BRUTALISM MULTI-COLOR THEME MODE
    - iPhone System Font (SF Pro Display / SF Pro Text)

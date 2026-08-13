@@ -1,7 +1,7 @@
 /**
- * APEX TRANSPORT - UNIFIED API CLIENT (WITH HYBRID VERCEL & LIVE BACKEND FALLBACK)
+ * APEX TRANSPORT - UNIFIED API CLIENT (WITH RESILIENT HYBRID AUTHENTICATION)
  * Handles JSON and FormData requests to Spring Boot REST endpoints with session cookies.
- * Automatically falls back to resilient local session management if the backend is unreachable.
+ * Simplifies testing with ID 1 (Admin), ID 2 (Transporter), ID 3 (Driver).
  */
 
 function escapeHtml(str) {
@@ -46,11 +46,11 @@ function formatRating(rating, count) {
   return '⭐ ' + Number(rating).toFixed(1);
 }
 
-// Seeded local fallback users for static hosting (Vercel)
+// Simplified Account Mappings: 1 (Admin), 2 (Transporter), 3 (Driver)
 const MOCK_USERS = [
-  { id: 1, name: 'Vikram Malhotra', email: 'vikram@apextransport.com', role: 'TRANSPORTER', companyName: 'Malhotra Logistics Ltd' },
-  { id: 2, name: 'Rajesh Kumar', email: 'rajesh@driver.com', role: 'DRIVER', vehicleType: 'Tata 16-Wheeler Multi-Axle' },
-  { id: 3, name: 'Apex Admin', email: 'admin@apextransport.com', role: 'ADMIN' }
+  { id: 1, name: 'Apex Admin', email: '1', role: 'ADMIN' },
+  { id: 2, name: 'Vikram Sharma', email: '2', role: 'TRANSPORTER', companyName: 'Sharma Freight Ltd' },
+  { id: 3, name: 'Rajesh Singh', email: '3', role: 'DRIVER', vehicleType: 'Tata Prima 5530.S' }
 ];
 
 const api = {
@@ -85,33 +85,30 @@ const api = {
     }
   },
 
-  // Auth Endpoints (With local fallback for static hosts like Vercel)
+  // Auth Endpoints (With simplified 1/1, 2/2, 3/3 accounts)
   async login(email, password) {
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    const cleanPass = String(password || '').trim();
+
     try {
       // 1. Try real live Spring Boot backend
       return await this.request('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: cleanEmail, password: cleanPass }),
       });
     } catch (err) {
-      // 2. Resilient Fallback for Vercel / Static Host / Offline server
+      // 2. Resilient Fallback for static hosting / offline / 1, 2, 3 credentials
       console.info('[API] Backend server unreachable, performing resilient local authentication.');
-      
-      const normalizedEmail = (email || '').toLowerCase().trim();
-      let user = MOCK_USERS.find(u => u.email.toLowerCase() === normalizedEmail);
 
-      if (!user) {
-        // Dynamic fallback user generation based on email hint
-        let role = 'TRANSPORTER';
-        if (normalizedEmail.includes('driver') || normalizedEmail.includes('rajesh')) role = 'DRIVER';
-        if (normalizedEmail.includes('admin')) role = 'ADMIN';
-
-        user = {
-          id: Date.now(),
-          name: email.split('@')[0].toUpperCase(),
-          email: email,
-          role: role
-        };
+      let user = null;
+      if (cleanEmail === '1' || cleanEmail.includes('admin')) {
+        user = { id: 1, name: 'Apex Admin', email: '1', role: 'ADMIN' };
+      } else if (cleanEmail === '2' || cleanEmail.includes('transporter') || cleanEmail.includes('vikram')) {
+        user = { id: 2, name: 'Vikram Sharma', email: '2', role: 'TRANSPORTER', companyName: 'Sharma Freight Ltd' };
+      } else if (cleanEmail === '3' || cleanEmail.includes('driver') || cleanEmail.includes('rajesh')) {
+        user = { id: 3, name: 'Rajesh Singh', email: '3', role: 'DRIVER', vehicleType: 'Tata Prima 5530.S' };
+      } else {
+        user = { id: Date.now(), name: cleanEmail.split('@')[0].toUpperCase(), email: cleanEmail, role: 'TRANSPORTER' };
       }
 
       localStorage.setItem('apex_user', JSON.stringify(user));

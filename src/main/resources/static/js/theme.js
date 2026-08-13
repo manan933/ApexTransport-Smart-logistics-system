@@ -1,9 +1,9 @@
 /**
- * Apex Transport - Multi-Theme Controller
+ * APEX TRANSPORT - MULTI-THEME ENGINE (DAY HIGHWAY / NIGHT DISPATCH / INDUSTRIAL TRUCKER)
  * Modes:
- *  - 'dark'        : Night Mode (Deep Obsidian / Midnight Navy - Default)
- *  - 'light'       : Day Mode (Clean White & Slate Gray)
- *  - 'neubrutalism': Neo-Brutalist Multi-Color Paper Mode
+ *  - 'light'   : Day Highway (Clean Emerald & White)
+ *  - 'dark'    : Night Dispatch (Midnight Cyber Navy)
+ *  - 'trucker' : Industrial Heavy Freight (Safety Amber & Steel Metallic)
  */
 
 (function () {
@@ -11,10 +11,9 @@
 
   function getPreferredTheme() {
     const saved = localStorage.getItem(THEME_KEY);
-    if (saved === 'light' || saved === 'dark' || saved === 'neubrutalism') {
+    if (saved === 'light' || saved === 'dark' || saved === 'trucker') {
       return saved;
     }
-    // Default to premium light mode (Apex Narrative)
     return 'light';
   }
 
@@ -30,17 +29,17 @@
   }
 
   function updateThemeButtons(theme) {
-    const buttons = document.querySelectorAll('.btn-theme-toggle, #theme-toggle-btn');
+    const buttons = document.querySelectorAll('.btn-theme-toggle, #theme-toggle-btn, .apex-theme-btn');
     buttons.forEach((btn) => {
       if (theme === 'dark') {
-        btn.innerHTML = '🌙 <span class="theme-label">Night</span>';
-        btn.setAttribute('title', 'Current: Night Mode (Click for Neo-Brutalist Mode)');
-      } else if (theme === 'light') {
-        btn.innerHTML = '✨ <span class="theme-label">Narrative</span>';
-        btn.setAttribute('title', 'Current: Apex Narrative Mode (Click for Night Mode)');
+        btn.innerHTML = '🌙 <span class="theme-label">Night Dispatch</span>';
+        btn.setAttribute('title', 'Current: Night Mode (Click for Industrial Trucker Mode)');
+      } else if (theme === 'trucker') {
+        btn.innerHTML = '🚚 <span class="theme-label">Industrial Trucker</span>';
+        btn.setAttribute('title', 'Current: Industrial Heavy Freight (Click for Day Mode)');
       } else {
-        btn.innerHTML = '🎨 <span class="theme-label">Neo-Brutal</span>';
-        btn.setAttribute('title', 'Current: Neo-Brutalist (Click for Apex Narrative Mode)');
+        btn.innerHTML = '☀️ <span class="theme-label">Day Highway</span>';
+        btn.setAttribute('title', 'Current: Day Highway Mode (Click for Night Dispatch Mode)');
       }
     });
   }
@@ -51,14 +50,20 @@
     if (current === 'light') {
       next = 'dark';
     } else if (current === 'dark') {
-      next = 'neubrutalism';
+      next = 'trucker';
     } else {
       next = 'light';
     }
     applyTheme(next);
   };
 
-  // Immediate execution to prevent flash of dark mode
+  window.setTheme = function (theme) {
+    if (theme === 'light' || theme === 'dark' || theme === 'trucker') {
+      applyTheme(theme);
+    }
+  };
+
+  // Immediate execution
   const initialTheme = getPreferredTheme();
   applyTheme(initialTheme);
 
