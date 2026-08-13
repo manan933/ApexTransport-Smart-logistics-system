@@ -1841,10 +1841,17 @@ select.form-control option {
     height: 36px !important;
   }
 
-  .topbar-actions .navbar-lang-container select {
+  .topbar-actions .navbar-lang-container button {
+    width: 36px !important;
     height: 36px !important;
-    padding: 0 8px !important;
-    font-size: 0.75rem !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    border-radius: 0 !important;
+  }
+
+  /* Hide topbar-only desktop elements on mobile */
+  .topbar-hide-mobile {
+    display: none !important;
   }
 
   .topbar .user-name,
@@ -2050,7 +2057,7 @@ select.form-control option {
   }
 
   .kpi-label {
-    font-size: 0.72rem !important;
+    font-size: 0.82rem !important;
   }
 
   /* 5. Responsive Grids & Vertical Chart Stacking */
@@ -2142,11 +2149,24 @@ select.form-control option {
     padding-bottom: 8px !important;
   }
 
+  /* Table data-label context labels */
+  .table-container td::before,
+  .table-responsive td::before {
+    content: attr(data-label) !important;
+    display: block !important;
+    font-weight: 700 !important;
+    font-size: 0.72rem !important;
+    color: var(--text-muted) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    margin-bottom: 2px !important;
+  }
+
   /* 7. Full-Width Maps & Controls */
   .map-container {
     width: 100% !important;
-    height: 270px !important;
-    max-height: 42vh !important;
+    height: 180px !important;
+    max-height: 35vh !important;
     border-radius: var(--radius-lg) !important;
   }
 

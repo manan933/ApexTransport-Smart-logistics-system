@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
@@ -71,18 +71,18 @@
           <span class="refresh-icon">🔄</span>
         </button>
 
-        <button class="btn btn-primary" onclick="openConsignmentModal()">
+        <button class="btn btn-primary topbar-hide-mobile" onclick="openConsignmentModal()">
           <span>+ Load</span>
         </button>
 
         <a href="/profile.html" class="user-chip" style="text-decoration: none;">
           <div class="user-avatar" id="nav-avatar">S</div>
-          <div>
+          <div class="topbar-hide-mobile">
             <div style="font-weight: 700; font-size: 0.85rem;" id="nav-username">Shipper</div>
           </div>
         </a>
 
-        <button class="btn btn-secondary btn-sm" onclick="api.logout()">Logout</button>
+        <button class="btn btn-secondary btn-sm topbar-hide-mobile" onclick="api.logout()">Logout</button>
       </div>
     </header>
 
@@ -804,19 +804,19 @@
 
           return `
             <tr>
-              <td class="mono" style="font-weight:700; color:var(--text-muted);">#CON-${o.id}</td>
-              <td>
+              <td data-label="ID" class="mono" style="font-weight:700; color:var(--text-muted);">#CON-${o.id}</td>
+              <td data-label="Route">
                 <div style="font-weight:700; color:var(--text-primary);">${escapeHtml(o.pickupLocation) || '--'}</div>
 <div style="font-size:0.8rem; color:var(--emerald-light);">↓ ${escapeHtml(o.dropLocation) || '--'}</div>
               </td>
-              <td>
+              <td data-label="Cargo">
                 <div style="font-weight:600;">${goods}</div>
                 <div style="font-size:0.75rem; color:var(--text-muted);">${weight} • ${o.vehicleType || 'Standard Truck'}</div>
               </td>
-              <td><b>${driverName}</b></td>
-              <td class="mono" style="font-weight:700; color:var(--emerald-light);">₹${fareDisplay}</td>
-              <td>${statusBadge}</td>
-              <td>
+              <td data-label="Driver"><b>${driverName}</b></td>
+              <td data-label="Value" class="mono" style="font-weight:700; color:var(--emerald-light);">₹${fareDisplay}</td>
+              <td data-label="Status">${statusBadge}</td>
+              <td data-label="Actions">
                 <div style="display:flex; gap:6px; align-items:center;">
                   ${actionBtn}
                 </div>

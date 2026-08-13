@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
@@ -32,19 +32,19 @@
           <span class="refresh-icon">🔄</span>
         </button>
 
-        <button class="btn btn-primary" onclick="openCreateUserModal()">
+        <button class="btn btn-primary topbar-hide-mobile" onclick="openCreateUserModal()">
           <span>+</span> Onboard Fleet User
         </button>
 
         <div class="user-chip">
           <div class="user-avatar" style="border-color: rgba(239,68,68,0.4); color: #F87171;" id="nav-avatar">A</div>
-          <div>
+          <div class="topbar-hide-mobile">
             <div style="font-weight: 700; font-size: 0.85rem;" id="nav-username">Admin</div>
             <span class="user-role-badge role-admin">ROOT</span>
           </div>
         </div>
 
-        <button class="btn btn-secondary btn-sm" onclick="api.logout()" data-i18n="nav_logout">Logout</button>
+        <button class="btn btn-secondary btn-sm topbar-hide-mobile" onclick="api.logout()" data-i18n="nav_logout">Logout</button>
       </div>
     </header>
 
@@ -217,25 +217,8 @@
     </div>
   </div>
 
-  <!-- Mobile Bottom App Dock for Super Admin -->
-  <nav class="driver-mobile-bottom-nav">
-    <button class="driver-mob-nav-btn active" id="mob-admin-users-btn" onclick="switchAdminTab('users')">
-      <span class="driver-mob-nav-icon">👥</span>
-      <span>Fleets</span>
-    </button>
-    <button class="driver-mob-nav-btn" onclick="openCreateUserModal()">
-      <span class="driver-mob-nav-icon">➕</span>
-      <span>Onboard</span>
-    </button>
-    <button class="driver-mob-nav-btn" id="mob-admin-logs-btn" onclick="switchAdminTab('logs')">
-      <span class="driver-mob-nav-icon">📜</span>
-      <span>Audit</span>
-    </button>
-    <a href="/profile.html" class="driver-mob-nav-btn">
-      <span class="driver-mob-nav-icon">👤</span>
-      <span>Profile</span>
-    </a>
-  </nav>
+
+
 
   <script src="/js/i18n.js?v=5.0"></script>
   <script src="/js/api.js?v=5.0"></script>
@@ -310,16 +293,16 @@
 
         return `
           <tr>
-            <td class="mono" style="font-weight:700; color:var(--text-muted);">#USR-${u.id}</td>
-            <td>
+            <td data-label="ID" class="mono" style="font-weight:700; color:var(--text-muted);">#USR-${u.id}</td>
+            <td data-label="Name">
               <div style="font-weight: 700; color: var(--text-primary);">${u.name}</div>
               <div style="font-size: 0.8rem; color: var(--text-muted);">${u.email}</div>
             </td>
-            <td>${roleBadge}</td>
-            <td>${vehicle}</td>
-            <td><span class="mono" style="color: var(--amber-light); font-weight: 700;">⭐ ${rating.toFixed(1)}</span></td>
-            <td>${statusBadge}</td>
-            <td>
+            <td data-label="Role">${roleBadge}</td>
+            <td data-label="Vehicle / Org">${vehicle}</td>
+            <td data-label="Rating"><span class="mono" style="color: var(--amber-light); font-weight: 700;">⭐ ${rating.toFixed(1)}</span></td>
+            <td data-label="Status">${statusBadge}</td>
+            <td data-label="Actions">
               <div style="display: flex; gap: 8px;">
                 <button class="btn btn-secondary btn-sm" onclick="toggleStatus(${u.id})">
                   ${u.active !== false ? 'Suspend' : 'Activate'}
@@ -350,11 +333,11 @@
         const timeStr = l.timestamp ? new Date(l.timestamp).toLocaleString() : 'Just now';
         return `
           <tr>
-            <td class="mono" style="color: var(--text-muted);">#LOG-${l.id}</td>
-            <td class="mono" style="font-size: 0.8rem; color: var(--text-secondary);">${timeStr}</td>
-            <td><span class="audit-badge">${l.action}</span></td>
-            <td><b>${l.userName || 'System'}</b> <span class="mono" style="font-size: 0.75rem; color: var(--text-muted);">(ID: ${l.userId || 0})</span></td>
-            <td class="mono" style="color: var(--emerald-light); font-weight: 600;">${l.entityType || 'ORDER'} #${l.entityId || 0}</td>
+            <td data-label="Log ID" class="mono" style="color: var(--text-muted);">#LOG-${l.id}</td>
+            <td data-label="Time" class="mono" style="font-size: 0.8rem; color: var(--text-secondary);">${timeStr}</td>
+            <td data-label="Action"><span class="audit-badge">${l.action}</span></td>
+            <td data-label="By"><b>${l.userName || 'System'}</b> <span class="mono" style="font-size: 0.75rem; color: var(--text-muted);">(ID: ${l.userId || 0})</span></td>
+            <td data-label="Entity" class="mono" style="color: var(--emerald-light); font-weight: 600;">${l.entityType || 'ORDER'} #${l.entityId || 0}</td>
             <td style="font-size: 0.85rem; color: var(--text-secondary);">${l.details || ''}</td>
           </tr>
         `;
