@@ -153,23 +153,22 @@
         <div class="brand-icon"
           style="background: var(--bg-surface-hover); color: var(--text-primary); font-size: 16px;">←</div>
         <div>
-          <div class="brand-name brand-apex">Apex Transport</div>
           <div class="brand-tag mono">FLEET PROFILE & SETTINGS</div>
         </div>
       </a>
 
       <div class="topbar-actions">
         <!-- Day / Night Theme Toggle Button -->
-        <button class="btn-theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
-          ☀️ <span class="theme-label">Day</span>
+        <button class="btn-theme-toggle btn-icon-square" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
+          ☀️
         </button>
 
         <!-- Language Toggle -->
-        <div class="navbar-lang-container"></div>
+        <div class="navbar-lang-container btn-icon-square"></div>
 
         <!-- Global Topbar Refresh Button -->
-        <button class="btn-topbar-refresh" id="btn-global-refresh" onclick="triggerProfileRefresh()" title="Refresh Profile Settings">
-          <span class="refresh-icon">🔄</span> <span class="refresh-label" data-i18n="btn_refresh">Refresh</span>
+        <button class="btn-topbar-refresh btn-icon-square" id="btn-global-refresh" onclick="triggerProfileRefresh()" title="Refresh Profile Settings">
+          <span class="refresh-icon">🔄</span>
         </button>
 
         <button class="btn btn-secondary btn-sm" onclick="api.logout()" data-i18n="nav_logout">Logout</button>

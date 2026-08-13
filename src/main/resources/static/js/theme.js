@@ -32,13 +32,13 @@
     const buttons = document.querySelectorAll('.btn-theme-toggle, #theme-toggle-btn, .apex-theme-btn');
     buttons.forEach((btn) => {
       if (theme === 'dark') {
-        btn.innerHTML = '🌙 <span class="theme-label">Pitch Black OLED</span>';
+        btn.innerHTML = '🌙';
         btn.setAttribute('title', 'Current: Pitch Black OLED Mode (Click for Telemetry HUD Cockpit Mode)');
       } else if (theme === 'trucker') {
-        btn.innerHTML = '🚛 <span class="theme-label">Telemetry HUD</span>';
+        btn.innerHTML = '🚛';
         btn.setAttribute('title', 'Current: Telemetry HUD Cockpit Mode (Click for Ice Blue Day Mode)');
       } else {
-        btn.innerHTML = '☀️ <span class="theme-label">Ice Blue Day</span>';
+        btn.innerHTML = '☀️';
         btn.setAttribute('title', 'Current: Ice Blue Day Mode (Click for Pitch Black OLED Mode)');
       }
     });
@@ -70,5 +70,39 @@
   // Hook DOMContentLoaded to bind event listeners
   window.addEventListener('DOMContentLoaded', () => {
     applyTheme(getPreferredTheme());
+  });
+
+  // Mobile Sidebar Drawer Logic
+  window.toggleMobileSidebar = function(forceState) {
+    const sidebar = document.querySelector('.sidebar');
+    const backdrop = document.getElementById('mobileSidebarBackdrop');
+    if (!sidebar) return;
+
+    const isOpen = typeof forceState === 'boolean' ? !forceState : sidebar.classList.contains('mobile-open');
+
+    if (!isOpen) {
+      sidebar.classList.add('mobile-open');
+      if (backdrop) backdrop.classList.add('show');
+      document.body.classList.add('drawer-open');
+    } else {
+      sidebar.classList.remove('mobile-open');
+      if (backdrop) backdrop.classList.remove('show');
+      document.body.classList.remove('drawer-open');
+    }
+  };
+
+  window.closeMobileSidebar = function() {
+    window.toggleMobileSidebar(false);
+  };
+
+  // Close drawer on navigation item selection on mobile
+  window.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+      item.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          window.closeMobileSidebar();
+        }
+      });
+    });
   });
 })();

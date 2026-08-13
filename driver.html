@@ -25,27 +25,27 @@
   <div class="app-wrapper">
     <!-- Topbar -->
     <header class="topbar">
+      <button class="mobile-sidebar-toggle btn-icon-square" onclick="toggleMobileSidebar()" title="Menu">☰</button>
       <div class="brand">
         <div class="brand-icon"
           style="background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);">
           🚚</div>
         <div>
-          <div class="brand-name brand-apex">Apex Transport</div>
           <div class="brand-tag mono">DRIVER</div>
         </div>
       </div>
 
       <div class="topbar-actions">
         <!-- Day / Night Theme Toggle Button -->
-        <button class="btn-theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
-          ☀️ <span class="theme-label">Theme</span>
+        <button class="btn-theme-toggle btn-icon-square" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
+          ☀️
         </button>
 
         <!-- Language Toggle -->
-        <div class="navbar-lang-container"></div>
+        <div class="navbar-lang-container btn-icon-square"></div>
 
         <!-- Global Topbar Refresh Button -->
-        <button class="btn-topbar-refresh" id="btn-global-refresh" onclick="triggerDriverRefresh()" title="Refresh Active Loads & Missions">
+        <button class="btn-topbar-refresh btn-icon-square" id="btn-global-refresh" onclick="triggerDriverRefresh()" title="Refresh Active Loads & Missions">
           <span class="refresh-icon">🔄</span>
         </button>
 
@@ -59,6 +59,8 @@
         <button class="btn btn-secondary btn-sm" onclick="api.logout()">Logout</button>
       </div>
     </header>
+
+    <div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop" onclick="toggleMobileSidebar()"></div>
 
     <div class="sidebar-layout">
       <!-- Left Sidebar Navigation (Desktop) -->
