@@ -1,9 +1,9 @@
 /**
- * APEX TRANSPORT - MULTI-THEME ENGINE (DAY HIGHWAY / NIGHT DISPATCH / INDUSTRIAL TRUCKER)
+ * APEX TRANSPORT - MULTI-THEME CONTROLLER
  * Modes:
- *  - 'light'   : Day Highway (Clean Emerald & White)
- *  - 'dark'    : Night Dispatch (Midnight Cyber Navy)
- *  - 'trucker' : Industrial Heavy Freight (Safety Amber & Steel Metallic)
+ *  - 'light'   : Ice Blue Day (Very Light Bluish Canvas)
+ *  - 'dark'    : Pitch Black OLED (True OLED Black & Neon Cyber Accents)
+ *  - 'trucker' : Telemetry HUD Cockpit (Interactive Autonomous Freight HUD)
  */
 
 (function () {
@@ -32,14 +32,14 @@
     const buttons = document.querySelectorAll('.btn-theme-toggle, #theme-toggle-btn, .apex-theme-btn');
     buttons.forEach((btn) => {
       if (theme === 'dark') {
-        btn.innerHTML = '🌙 <span class="theme-label">Night Dispatch</span>';
-        btn.setAttribute('title', 'Current: Night Mode (Click for Industrial Trucker Mode)');
+        btn.innerHTML = '🌙 <span class="theme-label">Pitch Black OLED</span>';
+        btn.setAttribute('title', 'Current: Pitch Black OLED Mode (Click for Telemetry HUD Cockpit Mode)');
       } else if (theme === 'trucker') {
-        btn.innerHTML = '🚚 <span class="theme-label">Industrial Trucker</span>';
-        btn.setAttribute('title', 'Current: Industrial Heavy Freight (Click for Day Mode)');
+        btn.innerHTML = '🚛 <span class="theme-label">Telemetry HUD</span>';
+        btn.setAttribute('title', 'Current: Telemetry HUD Cockpit Mode (Click for Ice Blue Day Mode)');
       } else {
-        btn.innerHTML = '☀️ <span class="theme-label">Day Highway</span>';
-        btn.setAttribute('title', 'Current: Day Highway Mode (Click for Night Dispatch Mode)');
+        btn.innerHTML = '☀️ <span class="theme-label">Ice Blue Day</span>';
+        btn.setAttribute('title', 'Current: Ice Blue Day Mode (Click for Pitch Black OLED Mode)');
       }
     });
   }

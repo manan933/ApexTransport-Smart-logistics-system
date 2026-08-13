@@ -39,130 +39,130 @@
 }
 :root,
 [data-theme="light"] {
-  /* Apex Narrative Day Mode */
-  --bg-base: #f8f9fa;
-  --bg-subtle: #f3f4f5;
-  --bg-surface: #ffffff;
-  --bg-surface-elevated: #edeeef;
-  --bg-surface-hover: #e7e8e9;
-  --bg-glass: rgba(255, 255, 255, 0.88);
+  /* Ice Blue Day Mode (Very Light Bluish Canvas) */
+  --bg-base: #EEF4FA;
+  --bg-subtle: #E3ECF5;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #EAF1F8;
+  --bg-surface-hover: #DFE9F4;
+  --bg-glass: rgba(240, 246, 252, 0.92);
 
   /* Contrast Accents */
-  --accent-contrast: #191c1d;
-  --accent-contrast-bg: #2e3132;
-  --accent-contrast-text: #ffffff;
-  --accent-contrast-border: #bccac0;
+  --accent-contrast: #0F172A;
+  --accent-contrast-bg: #1E293B;
+  --accent-contrast-text: #FFFFFF;
+  --accent-contrast-border: #94A3B8;
 
-  /* Primary Accent: Enterprise Emerald Green (#006948) */
-  --emerald-primary: #006948;
-  --emerald-hover: #005237;
-  --emerald-light: #00855d;
-  --emerald-subtle: rgba(0, 105, 72, 0.12);
-  --emerald-glow: rgba(0, 105, 72, 0.25);
+  /* Primary Accent: Crisp Emerald Green (#00855D) */
+  --emerald-primary: #00855D;
+  --emerald-hover: #006948;
+  --emerald-light: #10B981;
+  --emerald-subtle: rgba(0, 133, 93, 0.12);
+  --emerald-glow: rgba(0, 133, 93, 0.22);
 
-  /* Secondary Accent: Slate Indigo */
-  --amber-primary: #575e70;
-  --amber-hover: #3f4757;
-  --amber-light: #6e7583;
-  --amber-subtle: rgba(87, 94, 112, 0.12);
-  --amber-glow: rgba(87, 94, 112, 0.25);
+  /* Secondary Accent: Slate Steel Navy (#334155) */
+  --amber-primary: #334155;
+  --amber-hover: #1E293B;
+  --amber-light: #475569;
+  --amber-subtle: rgba(51, 65, 85, 0.12);
+  --amber-glow: rgba(51, 65, 85, 0.2);
 
-  /* Alert / Coral */
-  --coral-primary: #ba1a1a;
-  --coral-hover: #93000a;
-  --coral-subtle: #ffdad6;
+  /* Alert / Red */
+  --coral-primary: #DC2626;
+  --coral-hover: #B91C1C;
+  --coral-subtle: #FEE2E2;
 
   /* Utility Blue */
-  --blue-light: #575e70;
+  --blue-light: #3B82F6;
 
-  /* Typography: Ultra-Crisp Narrative Slate */
-  --text-primary: #191c1d;
-  --text-secondary: #3d4a42;
-  --text-muted: #6d7a72;
-  --text-inverse: #ffffff;
+  /* Typography: Ultra-Clean Slate Navy */
+  --text-primary: #0F172A;
+  --text-secondary: #334155;
+  --text-muted: #64748B;
+  --text-inverse: #FFFFFF;
 
   /* Borders & Dividers */
-  --border-subtle: #e1e3e4;
-  --border-prominent: #bccac0;
-  --border-emerald: #006c4a;
-  --border-amber: #6d7a72;
+  --border-subtle: #CBD5E1;
+  --border-prominent: #94A3B8;
+  --border-emerald: #00855D;
+  --border-amber: #475569;
 
-  /* Shadows (Soft Ambient 15% Shadow) */
-  --shadow-sm: 0 2px 8px rgba(25, 28, 29, 0.04);
-  --shadow-md: 0 4px 20px rgba(25, 28, 29, 0.05);
-  --shadow-lg: 0 8px 30px rgba(25, 28, 29, 0.08);
-  --shadow-glow-emerald: 0 0 24px rgba(0, 105, 72, 0.15);
-  --shadow-glow-amber: 0 0 24px rgba(87, 94, 112, 0.15);
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 20px rgba(15, 23, 42, 0.07);
+  --shadow-lg: 0 8px 30px rgba(15, 23, 42, 0.12);
+  --shadow-glow-emerald: 0 0 24px rgba(0, 133, 93, 0.15);
+  --shadow-glow-amber: 0 0 24px rgba(51, 65, 85, 0.15);
 
   /* Corner Radius */
-  --radius-sm: 0.25rem;       /* 4px */
-  --radius-md: 0.5rem;        /* 8px */
-  --radius-lg: 0.75rem;       /* 12px */
-  --radius-xl: 1rem;         /* 16px */
-  --radius-xxl: 1.5rem;       /* 24px */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-xxl: 24px;
   --radius-full: 9999px;
 
   /* Font Families */
-  --font-family-base: 'Geist', 'Google Sans', sans-serif;
+  --font-family-base: 'Plus Jakarta Sans', 'Google Sans', sans-serif;
   --font-family-mono: 'Geist Mono', monospace;
   --font-weight-bold: 800;
 }
 
 [data-theme="dark"] {
-  /* Night Mode (Deep Obsidian / Midnight Navy-Black) */
-  --bg-base: #090D16;
-  --bg-subtle: #0E1422;
-  --bg-surface: #141B2B;
-  --bg-surface-elevated: #1B2338;
-  --bg-surface-hover: #232D48;
-  --bg-glass: rgba(20, 27, 43, 0.92);
+  /* Pitch Black OLED Night Mode (True OLED Black) */
+  --bg-base: #000000;
+  --bg-subtle: #080C10;
+  --bg-surface: #0D121B;
+  --bg-surface-elevated: #131924;
+  --bg-surface-hover: #1B2332;
+  --bg-glass: rgba(0, 0, 0, 0.96);
 
-  /* Contrast Accents (White on Dark Navy/Black) */
+  /* Contrast Accents (Pure OLED White) */
   --accent-contrast: #FFFFFF;
   --accent-contrast-bg: #FFFFFF;
-  --accent-contrast-text: #090D16;
-  --accent-contrast-border: rgba(255, 255, 255, 0.25);
+  --accent-contrast-text: #000000;
+  --accent-contrast-border: rgba(255, 255, 255, 0.35);
 
-  /* Primary Accent: Cyber Emerald */
-  --emerald-primary: #10B981;
-  --emerald-hover: #059669;
-  --emerald-light: #34D399;
-  --emerald-subtle: rgba(16, 185, 129, 0.16);
-  --emerald-glow: rgba(16, 185, 129, 0.35);
+  /* Primary Accent: Neon Cyber Emerald (#00E676) */
+  --emerald-primary: #00E676;
+  --emerald-hover: #00C853;
+  --emerald-light: #69F0AE;
+  --emerald-subtle: rgba(0, 230, 118, 0.18);
+  --emerald-glow: rgba(0, 230, 118, 0.45);
 
-  /* Secondary Accent: Warm Amber */
-  --amber-primary: #F59E0B;
-  --amber-hover: #D97706;
-  --amber-light: #FBBF24;
-  --amber-subtle: rgba(245, 158, 11, 0.16);
-  --amber-glow: rgba(245, 158, 11, 0.35);
+  /* Secondary Accent: Cyber Cyan (#00E5FF) */
+  --amber-primary: #00E5FF;
+  --amber-hover: #00B8D4;
+  --amber-light: #84FFFF;
+  --amber-subtle: rgba(0, 229, 255, 0.18);
+  --amber-glow: rgba(0, 229, 255, 0.4);
 
-  /* Alert / Coral */
-  --coral-primary: #EF4444;
-  --coral-hover: #DC2626;
-  --coral-subtle: rgba(239, 68, 68, 0.16);
+  /* Alert / Red Hazard */
+  --coral-primary: #FF1744;
+  --coral-hover: #D50000;
+  --coral-subtle: rgba(255, 23, 68, 0.22);
 
   /* Utility Blue */
-  --blue-light: #60A5FA;
+  --blue-light: #40C4FF;
 
-  /* Typography: High-Contrast Crisp Bright */
-  --text-primary: #F8FAFC;
-  --text-secondary: #E2E8F0;
+  /* Typography: High-Contrast Crisp Pure White */
+  --text-primary: #FFFFFF;
+  --text-secondary: #F1F5F9;
   --text-muted: #94A3B8;
-  --text-inverse: #090D16;
+  --text-inverse: #000000;
 
   /* Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-prominent: rgba(255, 255, 255, 0.18);
-  --border-emerald: rgba(16, 185, 129, 0.45);
-  --border-amber: rgba(245, 158, 11, 0.45);
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --border-prominent: rgba(255, 255, 255, 0.28);
+  --border-emerald: rgba(0, 230, 118, 0.6);
+  --border-amber: rgba(0, 229, 255, 0.6);
 
-  /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.55);
-  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.7);
-  --shadow-glow-emerald: 0 0 24px rgba(16, 185, 129, 0.3);
-  --shadow-glow-amber: 0 0 24px rgba(245, 158, 11, 0.3);
+  /* Shadows (OLED High Glow) */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.9);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.95);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.98);
+  --shadow-glow-emerald: 0 0 28px rgba(0, 230, 118, 0.4);
+  --shadow-glow-amber: 0 0 28px rgba(0, 229, 255, 0.35);
 
   /* Corner Radius */
   --radius-sm: 8px;
@@ -174,68 +174,89 @@
 }
 
 [data-theme="trucker"] {
-  /* Industrial Heavy Freight Trucker Theme (Safety Amber & Steel Metallic) */
-  --bg-base: #0F141C;
-  --bg-subtle: #151C27;
-  --bg-surface: #1B2332;
-  --bg-surface-elevated: #232D3F;
-  --bg-surface-hover: #2C384E;
-  --bg-glass: rgba(27, 35, 50, 0.94);
+  /* HIGH-CONCEPT: Autonomous Cockpit Telematics HUD Mode */
+  --bg-base: #04080F;
+  --bg-subtle: #09101C;
+  --bg-surface: #0E1726;
+  --bg-surface-elevated: #152238;
+  --bg-surface-hover: #1D2D4A;
+  --bg-glass: rgba(14, 23, 38, 0.96);
 
-  /* Contrast Accents (Highway Safety Amber & Industrial Gold) */
+  /* Tactical Cyber Amber & Telemetry Cyan */
   --accent-contrast: #FF9800;
   --accent-contrast-bg: #FF9800;
   --accent-contrast-text: #000000;
   --accent-contrast-border: #FFB74D;
 
-  /* Primary Accent: Safety Warning Amber (#FF9800 / #F57C00) */
+  /* Primary Accent: Tactical Highway Amber (#FF9800) */
   --emerald-primary: #FF9800;
   --emerald-hover: #F57C00;
   --emerald-light: #FFB74D;
-  --emerald-subtle: rgba(255, 152, 0, 0.16);
-  --emerald-glow: rgba(255, 152, 0, 0.35);
+  --emerald-subtle: rgba(255, 152, 0, 0.2);
+  --emerald-glow: rgba(255, 152, 0, 0.45);
 
-  /* Secondary Accent: Industrial Caution Gold (#FFC107) */
-  --amber-primary: #FFC107;
-  --amber-hover: #FFA000;
-  --amber-light: #FFE082;
-  --amber-subtle: rgba(255, 193, 7, 0.16);
-  --amber-glow: rgba(255, 193, 7, 0.35);
+  /* Secondary Accent: Telemetry HUD Cyan (#00F0FF) */
+  --amber-primary: #00F0FF;
+  --amber-hover: #00C3FF;
+  --amber-light: #70F5FF;
+  --amber-subtle: rgba(0, 240, 255, 0.2);
+  --amber-glow: rgba(0, 240, 255, 0.45);
 
-  /* Alert / Red Hazard */
-  --coral-primary: #FF5252;
-  --coral-hover: #FF1744;
-  --coral-subtle: rgba(255, 82, 82, 0.2);
+  /* Alert / Hazard Yellow */
+  --coral-primary: #FF3B30;
+  --coral-hover: #DC2626;
+  --coral-subtle: rgba(255, 59, 48, 0.25);
 
   /* Utility Blue */
-  --blue-light: #64B5F6;
+  --blue-light: #00F0FF;
 
-  /* Typography: High Visibility Industrial Slate */
-  --text-primary: #F1F5F9;
+  /* Typography: High Visibility HUD Telematics Monospace */
+  --text-primary: #F8FAFC;
   --text-secondary: #CBD5E1;
-  --text-muted: #94A3B8;
-  --text-inverse: #0F172A;
+  --text-muted: #64748B;
+  --text-inverse: #04080F;
 
-  /* Borders & Dividers */
-  --border-subtle: #2D3748;
-  --border-prominent: #4A5568;
+  /* Borders & Dividers (Glowing Tactical Brackets) */
+  --border-subtle: #1E2D4A;
+  --border-prominent: #334B75;
   --border-emerald: #FF9800;
-  --border-amber: #FFC107;
+  --border-amber: #00F0FF;
 
-  /* Shadows (Metallic Industrial Shadow & Safety Amber Glow) */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.65);
-  --shadow-glow-emerald: 0 0 24px rgba(255, 152, 0, 0.3);
-  --shadow-glow-amber: 0 0 24px rgba(255, 193, 7, 0.3);
+  /* Shadows (Tactical Grid & Telemetry Glow) */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.7);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.85);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.95);
+  --shadow-glow-emerald: 0 0 28px rgba(255, 152, 0, 0.4);
+  --shadow-glow-amber: 0 0 28px rgba(0, 240, 255, 0.4);
 
   /* Corner Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
-  --radius-xxl: 24px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-xxl: 20px;
   --radius-full: 9999px;
+
+  /* Font Families */
+  --font-family-base: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+  --font-family-mono: 'Geist Mono', monospace;
+}
+
+/* Tactical HUD Cockpit Visual Enhancements */
+[data-theme="trucker"] .topbar,
+[data-theme="trucker"] .sidebar,
+[data-theme="trucker"] .card,
+[data-theme="trucker"] .apx-login-card {
+  border: 1px solid var(--border-prominent) !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.08), inset 0 0 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="trucker"] .badge,
+[data-theme="trucker"] .status-badge,
+[data-theme="trucker"] .apx-badge {
+  font-family: 'Space Grotesk', monospace !important;
+  letter-spacing: 0.06em !important;
+  border: 1px solid var(--emerald-primary) !important;
 }
 
 /* ==========================================================================
