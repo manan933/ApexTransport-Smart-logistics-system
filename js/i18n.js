@@ -403,7 +403,7 @@ const I18n = {
           EN
         </button>
         <button type="button" class="apex-lang-toggle-btn ${isHinglish ? 'active' : ''}" data-lang="hinglish" onclick="I18n.setLang('hinglish')">
-          🇮🇳 Hinglish
+          HI
         </button>
       </div>
     `;

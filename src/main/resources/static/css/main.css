@@ -1775,10 +1775,10 @@ select.form-control option {
     flex-direction: row !important;
     align-items: center !important;
     justify-content: space-between !important;
-    padding: 0.5rem 0.75rem !important;
-    min-height: 56px !important;
-    height: 56px !important;
-    gap: 8px !important;
+    padding: 0.5rem 1rem !important;
+    min-height: 64px !important;
+    height: 64px !important;
+    gap: 12px !important;
     flex-wrap: nowrap !important;
     overflow: hidden !important;
   }
@@ -1788,14 +1788,14 @@ select.form-control option {
   }
 
   .brand-icon {
-    width: 32px !important;
-    height: 32px !important;
-    font-size: 1rem !important;
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 1.1rem !important;
     border-radius: var(--radius-sm) !important;
   }
 
   .brand-name {
-    font-size: 1rem !important;
+    font-size: 1.15rem !important;
     white-space: nowrap !important;
   }
 
