@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tm_notifications")
+@Table(name = "tm_notifications", indexes = {
+    @Index(name = "idx_notif_user", columnList = "user_id"),
+    @Index(name = "idx_notif_is_read", columnList = "isRead"),
+    @Index(name = "idx_notif_created_at", columnList = "createdAt")
+})
 public class Notification {
 
     @Id
@@ -23,7 +27,16 @@ public class Notification {
     private String type = "INFO"; // INFO, SUCCESS, WARNING, ORDER
     private String link;
     private boolean isRead = false;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 
     public Notification() {}
 
@@ -65,4 +78,17 @@ public class Notification {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Notification that = (Notification) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

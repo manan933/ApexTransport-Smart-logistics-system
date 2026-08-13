@@ -4,8 +4,9 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tm_skipped_orders",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"driver_id", "order_id"}))
-public class SkippedOrder {
+       uniqueConstraints = @UniqueConstraint(columnNames = {"driver_id", "order_id"}),
+       indexes = {@Index(name = "idx_skipped_driver", columnList = "driver_id")})
+ public class SkippedOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,4 +35,17 @@ public class SkippedOrder {
 
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SkippedOrder that = (SkippedOrder) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

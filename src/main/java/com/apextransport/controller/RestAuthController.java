@@ -89,6 +89,9 @@ public class RestAuthController {
     @PostMapping("/login")
     @Transactional
     public ResponseEntity<?> login(@RequestBody Map<String, String> payload, HttpSession session) {
+        if (payload == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Email and password are required"));
+        }
         String email = payload.get("email");
         String password = payload.get("password");
 
@@ -140,6 +143,9 @@ public class RestAuthController {
     @PostMapping("/register")
     @Transactional
     public ResponseEntity<?> register(@RequestBody Map<String, String> payload, HttpSession session) {
+        if (payload == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Name, email, password, and role are required."));
+        }
         String name = payload.get("name");
         String email = payload.get("email");
         String password = payload.get("password");
@@ -210,6 +216,7 @@ public class RestAuthController {
     }
 
     @PostMapping("/profile")
+    @Transactional
     public ResponseEntity<?> updateProfile(
             @RequestParam("name") String name,
             @RequestParam(value = "phone", required = false) String phone,
@@ -274,7 +281,7 @@ public class RestAuthController {
         User saved = userRepository.save(user);
         session.setAttribute("userName", saved.getName());
 
-        auditLogService.log(saved, "UPDATED_PROFILE", "PROFILE", "User updated profile settings", "127.0.0.1");
+        auditLogService.log(saved, saved.getRole() != null ? saved.getRole().name() : "USER", "UPDATED_PROFILE", "PROFILE", "User updated profile settings");
 
         return ResponseEntity.ok(Map.of(
                 "success", true,

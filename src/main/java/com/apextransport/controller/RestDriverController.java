@@ -376,10 +376,15 @@ public class RestDriverController {
     }
 
     @PostMapping("/fleet-vehicles")
-    public ResponseEntity<?> updateFleetVehicles(@RequestBody Map<String, String> payload, HttpSession session) {
+    @Transactional
+    public ResponseEntity<?> updateFleetVehicles(@RequestBody(required = false) Map<String, String> payload, HttpSession session) {
         User driver = getLoggedInUser(session);
         if (driver == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Unauthorized"));
+        }
+
+        if (payload == null) {
+            payload = Collections.emptyMap();
         }
 
         String primaryVehicle = payload.get("vehicleType");
@@ -400,10 +405,14 @@ public class RestDriverController {
     }
 
     @PostMapping("/emergency")
-    public ResponseEntity<?> reportEmergency(@RequestBody Map<String, String> payload, HttpSession session) {
+    public ResponseEntity<?> reportEmergency(@RequestBody(required = false) Map<String, String> payload, HttpSession session) {
         User driver = getLoggedInUser(session);
         if (driver == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Unauthorized"));
+        }
+
+        if (payload == null) {
+            payload = Collections.emptyMap();
         }
 
         String emergencyType = payload.getOrDefault("type", "GENERAL_BREAKDOWN");

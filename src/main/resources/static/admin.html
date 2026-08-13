@@ -16,7 +16,16 @@
   <div class="app-wrapper">
     <!-- Topbar -->
     <header class="topbar">
-      <button class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()" title="Menu">☰</button>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()" title="Menu">☰</button>
+        <a href="/" class="brand topbar-hide-mobile">
+          <div class="brand-icon" style="background: linear-gradient(135deg, #EF4444, #B91C1C);">🛡️</div>
+          <div>
+            <div class="brand-name">Apex Transport</div>
+            <div class="brand-tag" style="color: #F87171;">Command Console</div>
+          </div>
+        </a>
+      </div>
 
       <div class="topbar-actions">
         <!-- Day / Night Theme Toggle Button -->

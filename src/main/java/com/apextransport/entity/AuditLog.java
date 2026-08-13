@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tm_audit_logs")
+@Table(name = "tm_audit_logs", indexes = {
+    @Index(name = "idx_audit_user", columnList = "user_id"),
+    @Index(name = "idx_audit_created_at", columnList = "createdAt"),
+    @Index(name = "idx_audit_role", columnList = "role")
+})
 public class AuditLog {
 
     @Id
@@ -30,7 +34,14 @@ public class AuditLog {
     private String ipAddress;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 
     public AuditLog() {}
 
@@ -77,4 +88,17 @@ public class AuditLog {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AuditLog auditLog = (AuditLog) o;
+        return id != null && id.equals(auditLog.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

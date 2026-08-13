@@ -55,7 +55,16 @@
   <div class="app-wrapper">
     <!-- Topbar -->
     <header class="topbar">
-      <button class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()" title="Menu">☰</button>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()" title="Menu">☰</button>
+        <a href="/" class="brand topbar-hide-mobile">
+          <div class="brand-icon">🚛</div>
+          <div>
+            <div class="brand-name">Apex Transport</div>
+            <div class="brand-tag">Freight Intelligence</div>
+          </div>
+        </a>
+      </div>
 
       <div class="topbar-actions">
         <!-- Day / Night Theme Toggle Button -->
