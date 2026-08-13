@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Driver Cockpit | Apex Transport</title>
+  <link rel="stylesheet" href="/css/main.css?v=6.0" />
+  <script src="/js/theme.js?v=6.0"></script>
+  <style>
+    body {
+      font-weight: 500;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body class="driver-portal">
+  <div class="ambient-bg"></div>
+
+  <div class="app-wrapper">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon"
+          style="background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);">
+          🚚</div>
+        <div>
+          <div class="brand-name brand-apex">Apex Transport</div>
+          <div class="brand-tag mono" data-i18n="tag_driver">PILOT FLIGHT DECK</div>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Day / Night Theme Toggle Button -->
+        <button class="btn-theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
+          ☀️ <span class="theme-label">Day</span>
+        </button>
+
+        <!-- Live HUD Clock (Desktop) -->
+        <div class="live-clock-widget" style="margin-bottom: 0; padding: 6px 12px;">
+          <div class="live-hud-clock-time" style="font-size: 0.95rem;">00:00:00</div>
+          <span style="margin: 0 6px; color: var(--border-prominent);">|</span>
+          <div class="live-hud-clock-date" style="font-size: 0.75rem;">TODAY</div>
+        </div>
+
+        <!-- Language Toggle -->
+        <div class="navbar-lang-container"></div>
+
+        <!-- Global Topbar Refresh Button -->
+        <button class="btn-topbar-refresh" id="btn-global-refresh" onclick="triggerDriverRefresh()" title="Refresh Active Loads & Missions">
+          <span class="refresh-icon">🔄</span> <span class="refresh-label" data-i18n="btn_refresh">Refresh</span>
+        </button>
+
+        <a href="/profile.html" class="user-chip" style="text-decoration: none;">
+          <div class="user-avatar" style="border-color: rgba(245, 158, 11, 0.4); color: var(--amber-light);"
+            id="nav-avatar">D</div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.85rem;" id="nav-username">Pilot Driver</div>
+            <div style="font-size: 0.72rem; color: var(--amber-light); font-weight: 700;" id="nav-user-rating">⭐ 5.0 (Pilot)</div>
+          </div>
+        </a>
+
+        <button class="btn btn-secondary btn-sm" onclick="api.logout()" data-i18n="nav_logout">Logout</button>
+      </div>
+    </header>
+
+    <div class="sidebar-layout">
+      <!-- Left Sidebar Navigation (Desktop) -->
+      <aside class="sidebar">
+        <div class="sidebar-nav">
+          <div class="sidebar-item active" id="side-cockpit-btn" onclick="switchDriverTab('cockpit')">
+            <span class="sidebar-item-icon">🧭</span>
+            <span data-i18n="tab_active_job">Active Mission & Job</span>
+          </div>
+          <div class="sidebar-item" id="side-available-btn" onclick="switchDriverTab('available')">
+            <span class="sidebar-item-icon">📋</span>
+            <span data-i18n="tab_available_loads">Available Freight Loads</span>
+          </div>
+          <div class="sidebar-item" id="side-logs-btn" onclick="switchDriverTab('logs')">
+            <span class="sidebar-item-icon">📜</span>
+            <span data-i18n="tab_activity_logs">Trip & Audit Logs</span>
+          </div>
+          <a href="/profile.html" class="sidebar-item" style="text-decoration: none;">
+            <span class="sidebar-item-icon">👤</span>
+            <span data-i18n="nav_profile">Driver Profile & Fleet</span>
+          </a>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="live-clock-widget">
+            <div>
+              <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">SYSTEM CLOCK (IST)</div>
+              <div class="live-hud-clock-time">00:00:00</div>
+            </div>
+            <div class="live-hud-clock-date">--</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="api.logout()" data-i18n="nav_logout">🚪 Logout</button>
+        </div>
+      </aside>
+
+      <!-- Main Workspace Container -->
+      <main class="main-container" style="flex: 1; padding: 1.5rem 2rem;">
+
+        <!-- ACTIVE JOB VIEW -->
+        <div id="view-cockpit">
+          <!-- Active Mission Command Hero -->
+          <div class="card" style="border-color: var(--border-amber); margin-bottom: 1.5rem;" id="active-job-card">
+            <div class="card-header">
+              <div class="card-title" style="color: var(--amber-light);">
+                <span>🎯</span> <span data-i18n="tab_active_job">Active Highway Transit Mission</span>
+              </div>
+              <div id="job-status-pill"></div>
+            </div>
+
+            <div id="active-job-content">
+              <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+                <div style="font-size: 2.5rem; margin-bottom: 8px;">🚚 💨</div>
+                <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-primary);"
+                  data-i18n="msg_no_active_job">No Active Consignment Assigned</div>
+                <p style="font-size: 0.9rem; margin-top: 4px;">Explore available freight loads on the exchange to claim
+                  your next payload.</p>
+                <button class="btn btn-primary btn-sm" style="margin-top: 1rem;" onclick="switchDriverTab('available')"
+                  data-i18n="tab_available_loads">View Available Loads</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Driver Trip Metrics -->
+          <div class="kpi-grid">
+            <div class="kpi-card kpi-amber">
+              <div class="kpi-header">
+                <span class="kpi-label">Active Payload</span>
+                <div class="kpi-icon">📦</div>
+              </div>
+              <div class="kpi-value" id="kpi-driver-cargo">0 KG</div>
+              <div class="kpi-meta"><span style="color: var(--amber-light);">●</span> Live consignment load</div>
+            </div>
+
+            <div class="kpi-card kpi-emerald">
+              <div class="kpi-header">
+                <span class="kpi-label">Completed Deliveries</span>
+                <div class="kpi-icon">🏁</div>
+              </div>
+              <div class="kpi-value" id="kpi-driver-trips">0</div>
+              <div class="kpi-meta"><span style="color: var(--emerald-light);">●</span> 100% On-Time Record</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">Pilot Trust Rating</span>
+                <div class="kpi-icon">⭐</div>
+              </div>
+              <div class="kpi-value mono" id="kpi-driver-rating" style="color: var(--amber-light);">5.0</div>
+              <div class="kpi-meta"><span style="color: var(--text-muted);">●</span> Verified Shipper Reviews</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AVAILABLE LOADS VIEW -->
+        <div id="view-available" style="display: none;">
+          <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-header">
+              <div class="card-title">
+                <span>📋</span> <span data-i18n="tab_available_loads">National Available Freight Exchange</span>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary btn-sm" onclick="openFleetModal()">🚚 Multi-Truck Fleet Options</button>
+                <button class="btn btn-secondary btn-sm" onclick="triggerDriverRefresh()">⟳ Refresh</button>
+              </div>
+            </div>
+
+            <!-- Multi-Truck Fleet Pill Selector -->
+            <div style="padding: 0 1rem;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; text-transform: uppercase;">
+                Active Fleet Compatibility Filter (Matched to Your Vehicles)
+              </div>
+              <div class="fleet-filter-bar" id="fleet-pills-bar">
+                <!-- Dynamically filled with Driver's vehicles -->
+              </div>
+            </div>
+
+            <div id="available-loads-container"
+              style="display: flex; flex-direction: column; gap: 16px; padding: 1rem 0;">
+              <div style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading available consignments...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRIP LOGS VIEW -->
+        <div id="view-logs" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>📜</span> <span data-i18n="tab_activity_logs">Pilot Trip & Activity History</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="triggerDriverRefresh()">⟳ Refresh History</button>
+            </div>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Action Event</th>
+                    <th>Reference Order</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="driver-logs-tbody">
+                  <tr>
+                    <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading trip logs...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom App Dock for Smartphone Drivers -->
+  <nav class="driver-mobile-bottom-nav">
+    <button class="driver-mob-nav-btn active" id="mob-cockpit-btn" onclick="switchDriverTab('cockpit')">
+      <span class="driver-mob-nav-icon">🧭</span>
+      <span data-i18n="tab_active_job">Mission</span>
+      <span id="mob-mission-pulse" class="driver-mob-nav-pulse" style="display: none;"></span>
+    </button>
+    <button class="driver-mob-nav-btn" id="mob-available-btn" onclick="switchDriverTab('available')">
+      <span class="driver-mob-nav-icon">📋</span>
+      <span data-i18n="tab_available_loads">Loads</span>
+      <span id="mob-loads-badge" class="driver-mob-nav-badge" style="display: none;">0</span>
+    </button>
+    <button class="driver-mob-nav-btn" id="mob-logs-btn" onclick="switchDriverTab('logs')">
+      <span class="driver-mob-nav-icon">📜</span>
+      <span data-i18n="tab_activity_logs">Trips</span>
+    </button>
+    <a href="/profile.html" class="driver-mob-nav-btn" id="mob-profile-btn">
+      <span class="driver-mob-nav-icon">👤</span>
+      <span data-i18n="nav_profile">Profile</span>
+    </a>
+  </nav>
+
+  <!-- Mandatory POD Upload & Shipper Rating Modal -->
+  <div class="modal-backdrop" id="pod-modal">
+    <div class="modal" style="max-width: 600px;">
+      <div class="modal-header">
+        <div class="card-title">
+          <span>📸</span> Confirm Delivery & Upload POD Challan
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="closePodModal()">✕</button>
+      </div>
+
+      <form id="pod-form" onsubmit="handleCompleteDelivery(event)">
+        <div class="modal-body">
+          <div
+            style="background: rgba(245, 158, 11, 0.1); border: 1px solid var(--border-amber); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 16px;">
+            <div style="font-weight: 700; font-size: 0.9rem; color: var(--amber-light);">⚠️ Mandatory Proof of Delivery (POD)</div>
+            <div style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px;">
+              Per Apex Transport protocol, you must attach a clear photo of the signed receiving slip/challan before payment release.
+            </div>
+          </div>
+
+          <!-- Capture / File Upload Input -->
+          <div class="form-group">
+            <label class="form-label" style="font-weight: 700;">Snap or Upload Signed POD / Challan Photo</label>
+            <input type="file" id="pod-camera-file" class="form-control" accept="image/*" capture="environment" required
+              onchange="handlePodFileSelect(event)" style="padding: 10px;" />
+          </div>
+
+          <!-- Live Preview -->
+          <div id="pod-preview-wrapper" style="display: none; margin-top: 8px;">
+            <img id="pod-preview-img"
+              style="width: 100%; max-height: 240px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--border-emerald);" />
+          </div>
+
+          <!-- Shipper 5-Star Rating -->
+          <div
+            style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle); text-align: center;">
+            <label class="form-label" style="font-weight: 700;">Rate Shipper's Unloading & Payment Experience:</label>
+            <div class="star-rating-box" id="shipper-stars" style="justify-content: center; margin: 12px 0;">
+              <span class="star-item" data-val="1" onclick="setShipperStarRating(1)" style="font-size: 2rem; cursor: pointer; padding: 0 4px;">★</span>
+              <span class="star-item" data-val="2" onclick="setShipperStarRating(2)" style="font-size: 2rem; cursor: pointer; padding: 0 4px;">★</span>
+              <span class="star-item" data-val="3" onclick="setShipperStarRating(3)" style="font-size: 2rem; cursor: pointer; padding: 0 4px;">★</span>
+              <span class="star-item" data-val="4" onclick="setShipperStarRating(4)" style="font-size: 2rem; cursor: pointer; padding: 0 4px;">★</span>
+              <span class="star-item active" data-val="5" onclick="setShipperStarRating(5)" style="font-size: 2rem; cursor: pointer; padding: 0 4px;">★</span>
+            </div>
+            <textarea id="shipper-review-text" class="form-control" rows="2"
+              placeholder="Optional notes regarding warehouse dock, unloader turnaround, etc..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closePodModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-pod" style="min-height: 48px; font-weight: 700;">
+            ✅ Verify POD & Complete Consignment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Quick Multi-Truck Fleet Configuration Modal -->
+  <div class="modal-backdrop" id="fleet-modal">
+    <div class="modal" style="max-width: 540px;">
+      <div class="modal-header">
+        <div class="card-title">
+          <span>🚚</span> Manage Fleet Vehicle Options
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="closeFleetModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Configure all truck and vehicle types you or your fleet operate. The system will automatically unlock freight matching <b>any</b> of these vehicles!
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" style="font-weight: 700;">Primary Vehicle Type:</label>
+          <input type="text" id="fleet-primary-input" class="form-control" placeholder="e.g. 32 Ft Multi-Axle (15T)" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" style="font-weight: 700;">Additional Vehicles / Fleet Options (Comma-Separated):</label>
+          <input type="text" id="fleet-additional-input" class="form-control" placeholder="e.g. Tata Ace, 20 Ft Container, Eicher Pro 24Ft" />
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+            Quick Presets: 
+            <a href="javascript:void(0)" onclick="appendFleetPreset('Tata Ace')" style="color: var(--amber-light);">Tata Ace</a>, 
+            <a href="javascript:void(0)" onclick="appendFleetPreset('32 Ft Multi-Axle')" style="color: var(--amber-light);">32 Ft Multi-Axle</a>, 
+            <a href="javascript:void(0)" onclick="appendFleetPreset('24 Ft Eicher')" style="color: var(--amber-light);">24 Ft Eicher</a>, 
+            <a href="javascript:void(0)" onclick="appendFleetPreset('20 Ft Container')" style="color: var(--amber-light);">20 Ft Container</a>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeFleetModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="saveFleetVehicles()">Save Fleet Config</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/js/i18n.js?v=5.0"></script>
+  <script src="/js/audio-alerts.js?v=5.0"></script>
+  <script src="/js/api.js?v=5.0"></script>
+
+  <script>
+    let currentUser = null;
+    let activeJob = null;
+    let availableLoads = [];
+    let driverMiniMap = null;
+    let currentPodBase64 = '';
+    let selectedShipperRating = 5;
+    let currentDriverTab = 'cockpit';
+    let currentVehicleFilter = 'ALL';
+
+    function switchDriverTab(tab) {
+      currentDriverTab = tab;
+      const cBtn = document.getElementById('side-cockpit-btn');
+      const aBtn = document.getElementById('side-available-btn');
+      const lBtn = document.getElementById('side-logs-btn');
+
+      const mCBtn = document.getElementById('mob-cockpit-btn');
+      const mABtn = document.getElementById('mob-available-btn');
+      const mLBtn = document.getElementById('mob-logs-btn');
+
+      const cView = document.getElementById('view-cockpit');
+      const aView = document.getElementById('view-available');
+      const lView = document.getElementById('view-logs');
+
+      [cBtn, aBtn, lBtn].filter(Boolean).forEach(b => b.classList.remove('active'));
+      [mCBtn, mABtn, mLBtn].filter(Boolean).forEach(b => b.classList.remove('active'));
+      [cView, aView, lView].filter(Boolean).forEach(v => v.style.display = 'none');
+
+      if (tab === 'cockpit') {
+        if (cBtn) cBtn.classList.add('active');
+        if (mCBtn) mCBtn.classList.add('active');
+        if (cView) cView.style.display = 'block';
+        if (driverMiniMap) setTimeout(() => driverMiniMap.invalidateSize(), 150);
+      } else if (tab === 'available') {
+        if (aBtn) aBtn.classList.add('active');
+        if (mABtn) mABtn.classList.add('active');
+        if (aView) aView.style.display = 'block';
+      } else {
+        if (lBtn) lBtn.classList.add('active');
+        if (mLBtn) mLBtn.classList.add('active');
+        if (lView) lView.style.display = 'block';
+        loadDriverLogs();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openPodModal() {
+      document.getElementById('pod-modal').classList.add('show');
+      setShipperStarRating(5);
+    }
+
+    function closePodModal() {
+      document.getElementById('pod-modal').classList.remove('show');
+    }
+
+    function openFleetModal() {
+      if (currentUser) {
+        document.getElementById('fleet-primary-input').value = currentUser.vehicleType || '';
+        document.getElementById('fleet-additional-input').value = currentUser.additionalVehicles || '';
+      }
+      document.getElementById('fleet-modal').classList.add('show');
+    }
+
+    function closeFleetModal() {
+      document.getElementById('fleet-modal').classList.remove('show');
+    }
+
+    function appendFleetPreset(name) {
+      const input = document.getElementById('fleet-additional-input');
+      const val = input.value.trim();
+      if (!val) {
+        input.value = name;
+      } else if (!val.toLowerCase().includes(name.toLowerCase())) {
+        input.value = `${val}, ${name}`;
+      }
+    }
+
+    async function saveFleetVehicles() {
+      const primary = document.getElementById('fleet-primary-input').value.trim();
+      const addl = document.getElementById('fleet-additional-input').value.trim();
+
+      try {
+        const res = await api.updateFleetVehicles(primary, addl);
+        currentUser = res.user;
+        showToast('Fleet vehicle configuration saved!', 'success');
+        closeFleetModal();
+        await loadDriverData();
+      } catch (err) {
+        showToast(err.message || 'Error updating fleet vehicles', 'error');
+      }
+    }
+
+    function setShipperStarRating(val) {
+      selectedShipperRating = val;
+      document.querySelectorAll('#shipper-stars .star-item').forEach(star => {
+        const sVal = parseInt(star.getAttribute('data-val'));
+        if (sVal <= val) {
+          star.classList.add('active');
+          star.style.color = 'var(--amber-light)';
+        } else {
+          star.classList.remove('active');
+          star.style.color = 'var(--text-muted)';
+        }
+      });
+    }
+
+    function handlePodFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          currentPodBase64 = evt.target.result;
+          document.getElementById('pod-preview-img').src = currentPodBase64;
+          document.getElementById('pod-preview-wrapper').style.display = 'block';
+          AudioAlerts.playChime('notification');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function renderFleetPills() {
+      const bar = document.getElementById('fleet-pills-bar');
+      if (!bar) return;
+
+      const vehicles = ['ALL'];
+      if (currentUser && currentUser.vehicleType) vehicles.push(currentUser.vehicleType);
+      if (currentUser && currentUser.additionalVehicles) {
+        currentUser.additionalVehicles.split(',').forEach(v => {
+          const t = v.trim();
+          if (t && !vehicles.includes(t)) vehicles.push(t);
+        });
+      }
+
+      bar.innerHTML = vehicles.map(v => `
+        <div class="fleet-filter-pill ${currentVehicleFilter === v ? 'active' : ''}" onclick="setVehicleFilter('${escapeHtml(v)}')">
+          ${v === 'ALL' ? '🚚 All Consignments (Open Exchange)' : `🚛 ${escapeHtml(v)}`}
+        </div>
+      `).join('') + `
+        <div class="fleet-filter-pill" style="border-style: dashed; color: var(--amber-light);" onclick="openFleetModal()">
+          ➕ Add Truck
+        </div>
+      `;
+    }
+
+    function setVehicleFilter(veh) {
+      currentVehicleFilter = veh;
+      renderFleetPills();
+      renderAvailableLoads();
+    }
+
+    function renderActiveJob() {
+      const container = document.getElementById('active-job-content');
+      const pill = document.getElementById('job-status-pill');
+      const mobPulse = document.getElementById('mob-mission-pulse');
+
+      if (driverMiniMap) {
+        try {
+          driverMiniMap.remove();
+        } catch (e) { }
+        driverMiniMap = null;
+      }
+
+      if (!activeJob) {
+        if (mobPulse) mobPulse.style.display = 'none';
+        if (pill) pill.innerHTML = `<span class="badge badge-completed"><span class="badge-dot"></span> READY FOR DISPATCH</span>`;
+        if (container) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">🚚 💨</div>
+              <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-primary);" data-i18n="msg_no_active_job">No Active Consignment Assigned</div>
+              <p style="font-size: 0.9rem; margin-top: 4px;">Explore available freight loads on the exchange to claim your next payload.</p>
+              <button class="btn btn-primary btn-sm" style="margin-top: 1rem;" onclick="switchDriverTab('available')" data-i18n="tab_available_loads">View Available Loads</button>
+            </div>
+          `;
+        }
+        if (typeof I18n !== 'undefined' && I18n.applyTranslations) I18n.applyTranslations();
+        return;
+      }
+
+      if (mobPulse) mobPulse.style.display = 'block';
+
+      const mapsUrl = (typeof I18n !== 'undefined' && I18n.getGoogleMapsUrl)
+        ? I18n.getGoogleMapsUrl(activeJob.pickupLocation, activeJob.dropLocation)
+        : `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(activeJob.pickupLocation || '')}&destination=${encodeURIComponent(activeJob.dropLocation || '')}`;
+      const isTransit = activeJob.status === 'IN_TRANSIT';
+
+      if (pill) {
+        pill.innerHTML = isTransit
+          ? `<span class="badge badge-transit"><span class="badge-dot"></span> <span data-i18n="status_in_transit">IN TRANSIT</span></span>`
+          : `<span class="badge badge-posted"><span class="badge-dot"></span> <span data-i18n="status_assigned">ASSIGNED / LOADING</span></span>`;
+      }
+
+      const specialBadges = [];
+      if (activeJob.isFragile) specialBadges.push(`<span class="spec-tag fragile">📦 Fragile Cargo</span>`);
+      if (activeJob.isHazardous) specialBadges.push(`<span class="spec-tag hazardous">⚠️ Hazmat</span>`);
+      if (activeJob.isTempControlled) specialBadges.push(`<span class="spec-tag cold-chain">❄️ Cold Chain (${activeJob.targetTemp || 0}°C)</span>`);
+
+      const phoneLink = activeJob.contactPersonPhone ? `<a href="tel:${escapeHtml(activeJob.contactPersonPhone)}" class="driver-call-btn">📞 Call Dispatch</a>` : '';
+
+      if (container) {
+        container.innerHTML = `
+          <div class="driver-active-mission-grid" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;" class="mono">CONSIGNMENT #CON-${activeJob.id}</span>
+                ${phoneLink}
+              </div>
+              
+              <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; margin-bottom: 12px;">
+                <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">ORIGIN PICKUP</div>
+                <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-top: 2px;">📍 ${escapeHtml(activeJob.pickupLocation || 'Pickup Location')}</div>
+                <div style="color: var(--emerald-light); font-weight: 900; font-size: 1.2rem; margin: 4px 0 2px 0;">⬇️</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">DESTINATION DROP</div>
+                <div style="font-size: 1.15rem; font-weight: 800; color: var(--emerald-light); margin-top: 2px;">🏁 ${escapeHtml(activeJob.dropLocation || 'Destination Location')}</div>
+              </div>
+
+              <div class="spec-tag-list" style="margin-bottom: 12px;">${specialBadges.join('')}</div>
+
+              <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.88rem;">
+                  <div><span style="color: var(--text-muted);">Cargo:</span> <b>${escapeHtml(activeJob.goodsDescription || activeJob.goodsType || 'General Freight')}</b></div>
+                  <div><span style="color: var(--text-muted);">Weight:</span> <b>${activeJob.weight || 0} KG</b></div>
+                  <div><span style="color: var(--text-muted);">Contact:</span> <b>${escapeHtml(activeJob.contactPersonName || 'Site Dispatch')}</b></div>
+                  <div><span style="color: var(--text-muted);">Vehicle:</span> <b>${escapeHtml(activeJob.vehicleType || 'Standard Truck')}</b></div>
+                </div>
+                ${activeJob.driverNotes ? `<div style="margin-top: 8px; font-size: 0.82rem; color: var(--amber-light);"><b>Note:</b> ${escapeHtml(activeJob.driverNotes)}</div>` : ''}
+              </div>
+
+              <!-- Action Buttons for Mobile & Desktop -->
+              <div class="driver-action-buttons-wrapper" style="display: flex; gap: 10px; margin-top: 1.25rem; flex-wrap: wrap;">
+                <!-- Google Maps Redirect Button -->
+                <a href="${mapsUrl}" target="_blank" class="btn btn-secondary driver-action-btn-mobile" style="color: var(--emerald-light); text-decoration: none; flex: 1;">
+                  🗺️ <span data-i18n="btn_view_map">Open Google Maps</span>
+                </a>
+
+                <button class="btn btn-secondary driver-action-btn-mobile" style="color: var(--amber-light); flex: 1;" onclick="broadcastDriverLocation()">
+                  📍 <span>Broadcast Live GPS</span>
+                </button>
+
+                ${!isTransit ? `
+                  <button class="btn btn-primary driver-action-btn-mobile" style="flex: 1; background: linear-gradient(135deg, #F59E0B, #D97706); border-color: #F59E0B;" onclick="startTransit(${activeJob.id})">
+                    🚚 <span data-i18n="btn_start_transit">Start Highway Transit</span>
+                  </button>
+                ` : `
+                  <button class="btn btn-primary driver-action-btn-mobile" style="flex: 1;" onclick="openPodModal()">
+                    📸 <span data-i18n="btn_mark_delivered">Deliver & Upload POD</span>
+                  </button>
+                `}
+              </div>
+            </div>
+
+            <!-- Mini Map -->
+            <div>
+              <div id="driver-mini-map" style="height: 220px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);"></div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding: 8px 12px; background: var(--bg-surface-elevated); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                <span style="color: var(--text-muted); font-size: 0.85rem;">Guaranteed Escrow:</span>
+                <span class="mono" style="font-weight: 800; color: var(--emerald-light); font-size: 1.25rem;">₹${(activeJob.price || 0).toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (typeof I18n !== 'undefined' && I18n.applyTranslations) I18n.applyTranslations();
+
+      setTimeout(() => {
+        try {
+          const mapEl = document.getElementById('driver-mini-map');
+          if (mapEl && typeof L !== 'undefined') {
+            if (driverMiniMap) {
+              try { driverMiniMap.remove(); } catch (e) { }
+              driverMiniMap = null;
+            }
+            const pLat = (activeJob.pickupLat && !isNaN(activeJob.pickupLat)) ? activeJob.pickupLat : 21.7679;
+            const pLng = (activeJob.pickupLng && !isNaN(activeJob.pickupLng)) ? activeJob.pickupLng : 78.8718;
+            driverMiniMap = L.map('driver-mini-map').setView([pLat, pLng], 6);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(driverMiniMap);
+            if (activeJob.pickupLat && activeJob.pickupLng) {
+              L.marker([activeJob.pickupLat, activeJob.pickupLng]).addTo(driverMiniMap).bindPopup(`<b>Pickup:</b> ${escapeHtml(activeJob.pickupLocation || '')}`);
+            }
+            if (activeJob.dropLat && activeJob.dropLng) {
+              L.marker([activeJob.dropLat, activeJob.dropLng]).addTo(driverMiniMap).bindPopup(`<b>Drop:</b> ${escapeHtml(activeJob.dropLocation || '')}`);
+              L.polyline([[activeJob.pickupLat, activeJob.pickupLng], [activeJob.dropLat, activeJob.dropLng]], { color: '#34D399', weight: 3 }).addTo(driverMiniMap);
+            }
+            driverMiniMap.invalidateSize();
+          }
+        } catch (mapErr) {
+          console.warn('Mini-map init warning:', mapErr);
+        }
+      }, 200);
+    }
+
+    function renderAvailableLoads() {
+      const container = document.getElementById('available-loads-container');
+      const mobBadge = document.getElementById('mob-loads-badge');
+      if (!container) return;
+
+      let filtered = availableLoads || [];
+      if (currentVehicleFilter !== 'ALL') {
+        const target = currentVehicleFilter.toLowerCase();
+        filtered = filtered.filter(o => o.vehicleType && o.vehicleType.toLowerCase().includes(target));
+      }
+
+      if (filtered.length === 0) {
+        if (mobBadge) mobBadge.style.display = (availableLoads && availableLoads.length > 0) ? 'inline-block' : 'none';
+        container.innerHTML = `
+          <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+            <div style="font-size: 2rem; margin-bottom: 4px;">📦</div>
+            <div>No open loads found matching this vehicle type. Check other fleet options or add more truck types!</div>
+          </div>
+        `;
+        return;
+      }
+
+      if (mobBadge) {
+        mobBadge.textContent = availableLoads.length;
+        mobBadge.style.display = 'inline-block';
+      }
+
+      container.innerHTML = filtered.map(o => {
+        const mapsUrl = (typeof I18n !== 'undefined' && I18n.getGoogleMapsUrl)
+          ? I18n.getGoogleMapsUrl(o.pickupLocation, o.dropLocation)
+          : `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(o.pickupLocation || '')}&destination=${encodeURIComponent(o.dropLocation || '')}`;
+        const specialBadges = [];
+        if (o.isFragile) specialBadges.push(`<span class="spec-tag fragile">📦 Fragile</span>`);
+        if (o.isHazardous) specialBadges.push(`<span class="spec-tag hazardous">⚠️ Hazmat</span>`);
+        if (o.isTempControlled) specialBadges.push(`<span class="spec-tag cold-chain">❄️ Temp (${o.targetTemp || 0}°C)</span>`);
+
+        const distKm = o.distanceKm != null ? o.distanceKm : null;
+
+        return `
+          <div class="card driver-available-load-card" style="border: 1px solid var(--border-subtle); background: var(--bg-surface-elevated); padding: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+              <div style="flex: 1; min-width: 240px;">
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <span class="mono" style="font-weight: 700; color: var(--text-muted);">#CON-${o.id}</span>
+                  <span class="spec-tag">📏 ${distKm != null ? '~ ' + distKm + ' KM' : 'Calculated'}</span>
+                </div>
+
+                <div style="margin-top: 10px;">
+                  <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">📍 ${escapeHtml(o.pickupLocation || '')}</div>
+                  <div style="color: var(--emerald-light); font-weight: 800; font-size: 1.1rem; margin: 3px 0;">⬇️ ${escapeHtml(o.dropLocation || '')}</div>
+                </div>
+
+                <div class="spec-tag-list" style="margin-top: 6px;">${specialBadges.join('')}</div>
+
+                <div style="display: flex; gap: 12px; margin-top: 10px; font-size: 0.85rem; color: var(--text-secondary); flex-wrap: wrap;">
+                  <div><b>Commodity:</b> ${escapeHtml(o.goodsDescription || o.goodsType || 'General Freight')}</div>
+                  <div><b>Payload:</b> ${o.weight || 0} KG</div>
+                  <div><b>Vehicle:</b> <span style="color: var(--amber-light); font-weight: 700;">${escapeHtml(o.vehicleType || 'Standard Truck')}</span></div>
+                  <div><b>Slot:</b> ${escapeHtml(o.pickupTimeSlot || 'Immediate')}</div>
+                </div>
+                ${o.driverNotes ? `<div style="font-size: 0.8rem; color: var(--amber-light); margin-top: 6px;"><b>Shipper Note:</b> ${escapeHtml(o.driverNotes)}</div>` : ''}
+              </div>
+
+              <div class="driver-load-card-right" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; min-width: 160px;">
+                <div class="mono" style="font-size: 1.4rem; font-weight: 800; color: var(--emerald-light);">₹${(o.price || 0).toLocaleString('en-IN')}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Instant Escrow Clearance</div>
+                <div class="driver-load-card-actions" style="display: flex; gap: 8px; margin-top: 4px;">
+                  <a href="${mapsUrl}" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration: none;">🗺️ Map</a>
+                  <button class="btn btn-primary btn-sm" onclick="acceptLoad(${o.id})" data-i18n="btn_accept_job">Accept Mission</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (typeof I18n !== 'undefined' && I18n.applyTranslations) I18n.applyTranslations();
+    }
+
+    async function loadDriverData() {
+      try {
+        const me = await api.getMe();
+        if (!me || !me.authenticated || !me.user || me.user.role !== 'DRIVER') {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        currentUser = me.user;
+        const elUsername = document.getElementById('nav-username');
+        if (elUsername) elUsername.textContent = currentUser.name || 'Pilot Driver';
+        const elAvatar = document.getElementById('nav-avatar');
+        if (elAvatar) elAvatar.textContent = (currentUser.name || 'D').charAt(0).toUpperCase();
+        const elKpiRating = document.getElementById('kpi-driver-rating');
+        if (elKpiRating) elKpiRating.textContent = (currentUser.rating ? Number(currentUser.rating) : 5.0).toFixed(1);
+        const elNavRating = document.getElementById('nav-user-rating');
+        if (elNavRating) elNavRating.textContent = `⭐ ${(currentUser.rating ? Number(currentUser.rating) : 5.0).toFixed(1)} (Pilot)`;
+        const elKpiTrips = document.getElementById('kpi-driver-trips');
+        if (elKpiTrips) elKpiTrips.textContent = currentUser.totalDeliveries || 0;
+
+        renderFleetPills();
+
+        // Fetch Dashboard Data
+        const dash = await api.getDriverDashboard();
+        activeJob = dash.currentJob || dash.activeOrder || dash.activeJob || null;
+        availableLoads = dash.availableOrders || [];
+
+        const elKpiCargo = document.getElementById('kpi-driver-cargo');
+        if (elKpiCargo) {
+          elKpiCargo.textContent = activeJob ? `${activeJob.weight || 0} KG` : `0 KG`;
+        }
+
+        renderActiveJob();
+        renderAvailableLoads();
+      } catch (err) {
+        console.error('Driver deck load error:', err);
+        throw err;
+      }
+    }
+
+    async function acceptLoad(orderId) {
+      try {
+        await api.acceptOrder(orderId);
+        if (typeof AudioAlerts !== 'undefined') {
+          AudioAlerts.playChime('accepted');
+          AudioAlerts.showNotification('Consignment Claimed', 'Mission accepted! Proceed to pickup location.', 'transit');
+        }
+        switchDriverTab('cockpit');
+        await loadDriverData();
+      } catch (err) {
+        showToast(err.message || 'Error accepting load', 'error');
+      }
+    }
+
+    async function startTransit(orderId) {
+      try {
+        await api.startOrderTransit(orderId);
+        if (typeof AudioAlerts !== 'undefined') {
+          AudioAlerts.playChime('transit');
+          AudioAlerts.showNotification('In Transit', 'Payload dispatched onto national highway network!', 'transit');
+        }
+        await loadDriverData();
+      } catch (err) {
+        showToast(err.message || 'Error starting transit', 'error');
+      }
+    }
+
+    async function handleCompleteDelivery(e) {
+      e.preventDefault();
+      if (!currentPodBase64) {
+        showToast('You must attach a signed POD photo', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-pod');
+      try {
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Uploading POD & Settling...';
+        }
+
+        const payload = new FormData();
+        payload.append('podImageUrl', currentPodBase64);
+        payload.append('shipperRating', selectedShipperRating);
+        payload.append('shipperReview', document.getElementById('shipper-review-text') ? document.getElementById('shipper-review-text').value : '');
+
+        await api.completeOrderWithPod(activeJob.id, payload);
+
+        if (typeof AudioAlerts !== 'undefined') {
+          AudioAlerts.playChime('delivered');
+          AudioAlerts.showNotification('Delivery Verified', 'Proof of Delivery accepted! Escrow payment cleared.', 'delivered');
+        }
+        closePodModal();
+        currentPodBase64 = '';
+        const preview = document.getElementById('pod-preview-wrapper');
+        if (preview) preview.style.display = 'none';
+        const form = document.getElementById('pod-form');
+        if (form) form.reset();
+        await loadDriverData();
+      } catch (err) {
+        showToast(err.message || 'Error completing delivery', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '✅ Verify POD & Complete Consignment';
+        }
+      }
+    }
+
+    async function loadDriverLogs() {
+      const tbody = document.getElementById('driver-logs-tbody');
+      if (!tbody) return;
+      try {
+        const logs = await api.getDriverLogs();
+        if (!logs || logs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">No trip activity logs recorded yet.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = logs.map(l => {
+          const time = l.timestamp ? new Date(l.timestamp).toLocaleString() : 'Just now';
+          return `
+            <tr>
+              <td class="mono" style="font-size: 0.8rem; color: var(--text-secondary);">${time}</td>
+              <td><span class="audit-badge order">${escapeHtml(l.action)}</span></td>
+              <td class="mono" style="color: var(--amber-light); font-weight:700;">#CON-${l.entityId || 0}</td>
+              <td style="font-size: 0.85rem; color: var(--text-secondary);">${escapeHtml(l.details || '')}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--coral-primary);">Could not load logs</td></tr>`;
+      }
+    }
+
+    async function triggerDriverRefresh() {
+      const btn = document.getElementById('btn-global-refresh');
+      if (btn) btn.classList.add('spinning');
+      try {
+        await loadDriverData();
+        if (currentDriverTab === 'logs') {
+          await loadDriverLogs();
+        }
+        showToast('Driver cockpit & missions updated', 'info');
+      } catch (e) {
+        console.error('Refresh error in cockpit:', e);
+        showToast(e.message || 'Error refreshing driver cockpit', 'error');
+      } finally {
+        setTimeout(() => {
+          if (btn) btn.classList.remove('spinning');
+        }, 600);
+      }
+    }
+
+    async function broadcastDriverLocation() {
+      if (!activeJob) {
+        showToast('No active consignment assigned', 'warn');
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        showToast('GPS location API not supported on this browser', 'error');
+        return;
+      }
+
+      showToast('Broadcasting live GPS coordinates to Radar...', 'info');
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          try {
+            const res = await api.request(`/driver/orders/${activeJob.id}/location?lat=${lat}&lng=${lng}`, {
+              method: 'POST'
+            });
+            if (res.success) {
+              showToast('✓ Live GPS location updated on Transporter Radar!', 'success');
+              await loadDriverData();
+            } else {
+              showToast(res.error || 'Failed to update location', 'error');
+            }
+          } catch (e) {
+            showToast(e.message || 'Error broadcasting location to server', 'error');
+          }
+        },
+        (err) => {
+          console.warn('GPS error:', err);
+          showToast('Could not fetch device GPS. Please enable location permissions.', 'warn');
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    }
+
+    window.addEventListener('DOMContentLoaded', loadDriverData);
+  </script>
+</body>
+
+</html>

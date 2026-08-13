@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>User Profile & Fleet Settings | Apex Transport</title>
+  <link rel="stylesheet" href="/css/main.css?v=5.0" />
+  <script src="/js/theme.js?v=5.0"></script>
+  <style>
+    .profile-header-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .profile-banner-container {
+      position: relative;
+      height: 200px;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      background-size: cover;
+      background-position: center;
+      transition: background-image 0.3s ease;
+    }
+
+    .profile-avatar-container {
+      position: absolute;
+      top: 135px;
+      left: 32px;
+      width: 105px;
+      height: 105px;
+      border-radius: var(--radius-full);
+      background: var(--bg-surface);
+      padding: 5px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      z-index: 2;
+    }
+
+    .profile-avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: var(--bg-surface-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--amber-light);
+      border: 2px solid var(--border-prominent);
+      object-fit: cover;
+      overflow: hidden;
+    }
+
+    .profile-avatar-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-meta-bar {
+      padding: 50px 32px 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .upload-btn-overlay {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-prominent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-fast);
+      z-index: 3;
+    }
+
+    .upload-btn-overlay:hover {
+      background: var(--bg-surface-hover);
+      transform: scale(1.1);
+    }
+
+    .banner-upload-overlay {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(8px);
+      transition: all var(--transition-fast);
+      z-index: 3;
+    }
+
+    .banner-upload-overlay:hover {
+      background: rgba(15, 23, 42, 0.95);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 768px) {
+      .profile-banner-container {
+        height: 160px;
+      }
+      .profile-meta-bar {
+        padding: 48px 16px 20px 16px;
+      }
+      .profile-avatar-container {
+        left: 16px;
+        top: 110px;
+        width: 85px;
+        height: 85px;
+      }
+      .grid-2col {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ambient-bg"></div>
+
+  <div class="app-wrapper">
+    <!-- Topbar -->
+    <header class="topbar">
+      <a href="javascript:goToDashboard()" class="brand" style="text-decoration: none;">
+        <div class="brand-icon"
+          style="background: var(--bg-surface-hover); color: var(--text-primary); font-size: 16px;">←</div>
+        <div>
+          <div class="brand-name brand-apex">Apex Transport</div>
+          <div class="brand-tag mono">FLEET PROFILE & SETTINGS</div>
+        </div>
+      </a>
+
+      <div class="topbar-actions">
+        <!-- Day / Night Theme Toggle Button -->
+        <button class="btn-theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
+          ☀️ <span class="theme-label">Day</span>
+        </button>
+
+        <!-- Language Toggle -->
+        <div class="navbar-lang-container"></div>
+
+        <!-- Global Topbar Refresh Button -->
+        <button class="btn-topbar-refresh" id="btn-global-refresh" onclick="triggerProfileRefresh()" title="Refresh Profile Settings">
+          <span class="refresh-icon">🔄</span> <span class="refresh-label" data-i18n="btn_refresh">Refresh</span>
+        </button>
+
+        <button class="btn btn-secondary btn-sm" onclick="api.logout()" data-i18n="nav_logout">Logout</button>
+      </div>
+    </header>
+
+    <main class="main-container" style="max-width: 960px;">
+
+      <!-- Profile Header -->
+      <div class="profile-header-card">
+        <!-- Banner with Native Photo Upload Overlay -->
+        <div class="profile-banner-container" id="banner-bg">
+          <label class="banner-upload-overlay" title="Upload or Change Banner Picture">
+            📷 <span>Change Banner</span>
+            <input type="file" id="input-banner-file" accept="image/*" style="display: none;"
+              onchange="handleBannerUpload(event)" />
+          </label>
+        </div>
+
+        <!-- Overlapping Circular Avatar with Native Photo Upload Overlay -->
+        <div class="profile-avatar-container">
+          <div class="profile-avatar-img" id="avatar-display">U</div>
+          <label class="upload-btn-overlay" title="Upload or Capture Profile Photo">
+            📸
+            <input type="file" id="input-avatar-file" accept="image/*" capture="user" style="display: none;"
+              onchange="handleAvatarUpload(event)" />
+          </label>
+        </div>
+
+        <!-- Profile Metadata & Ratings -->
+        <div class="profile-meta-bar">
+          <div>
+            <h1 id="user-display-name" style="font-size: 1.7rem; margin-bottom: 4px; font-weight: 700;">User Profile</h1>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap;">
+              <span class="user-role-badge" id="user-role-badge">USER</span>
+              <span class="mono" style="color: var(--text-muted); font-size: 0.85rem;"
+                id="user-display-email">user@logistics.com</span>
+            </div>
+            <!-- Trust Rating & Verified ID -->
+            <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span class="rating-badge" id="user-trust-rating">⭐ 5.0 / 5.0</span>
+              <span class="badge badge-completed">✓ VERIFIED APEX ID</span>
+            </div>
+          </div>
+
+          <div>
+            <button class="btn btn-primary" onclick="document.getElementById('btn-save-profile').click()">
+              💾 Save Profile Updates
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Credentials & Fleet Verification Form -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚙️ <span data-i18n="nav_profile">Account & Fleet Documentation</span></div>
+        </div>
+
+        <form id="profile-form" onsubmit="handleSaveProfile(event)">
+          <div class="grid-2col" style="gap: 1.25rem; margin-bottom: 1.5rem;">
+
+            <!-- Common Fields -->
+            <div class="form-group">
+              <label class="form-label">Full Legal Name</label>
+              <input type="text" id="prof-name" class="form-control" required placeholder="Enter full name" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Contact Phone Number</label>
+              <input type="text" id="prof-phone" class="form-control" placeholder="+91 98765 43210" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" data-i18n="label_email">Official Email Address (Verified)</label>
+              <input type="email" id="prof-email" class="form-control" disabled style="opacity: 0.7; cursor: not-allowed;" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Instant UPI ID for Direct Settlements</label>
+              <input type="text" id="prof-upi" class="form-control" placeholder="username@okhdfcbank" />
+            </div>
+          </div>
+
+          <!-- Driver Specific Fields -->
+          <div id="driver-fields"
+            style="display: none; border-top: 1px solid var(--border-subtle); padding-top: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--amber-light);">🚚 Driver Fleet & Vehicle Configuration</h3>
+            <div class="grid-2col" style="gap: 1.25rem;">
+              <div class="form-group">
+                <label class="form-label">Primary Vehicle Registration Number</label>
+                <input type="text" id="prof-vehicle-num" class="form-control" placeholder="MH-12-AB-1234" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Primary Vehicle Body Type</label>
+                <input type="text" id="prof-vehicle-type" class="form-control" placeholder="e.g. 32 Ft Multi-Axle, 20 Ft Container" />
+              </div>
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <label class="form-label" style="color: var(--amber-light); font-weight: 800;">
+                  🌟 Additional Fleet Trucks & Vehicle Types (Comma-Separated)
+                </label>
+                <input type="text" id="prof-additional-vehicles" class="form-control" placeholder="e.g. Tata Ace, 20 Ft Container, 24 Ft Eicher, Flatbed Trailer" />
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">
+                  💡 <b>Multi-Truck Fleet:</b> Add all truck models you operate so you can filter and access all matching consignments across the exchange.
+                </div>
+              </div>
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <label class="form-label">Commercial Driving License (DL Number)</label>
+                <input type="text" id="prof-license" class="form-control" placeholder="DL-1420110012345" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Transporter Specific Fields -->
+          <div id="transporter-fields"
+            style="display: none; border-top: 1px solid var(--border-subtle); padding-top: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--emerald-light);">🏢 Shipper Company Registration</h3>
+            <div class="grid-2col" style="gap: 1.25rem;">
+              <div class="form-group">
+                <label class="form-label">Registered Legal Entity / Company</label>
+                <input type="text" id="prof-company" class="form-control" placeholder="Apex Logistics Pvt Ltd" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">GSTIN Verification Number</label>
+                <input type="text" id="prof-gst" class="form-control" placeholder="27AADCB2230M1Z2" />
+              </div>
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <label class="form-label">Registered Billing & Dispatch Address</label>
+                <input type="text" id="prof-address" class="form-control"
+                  placeholder="123 Industrial Area, Phase 1, Mumbai" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Admin Specific Fields -->
+          <div id="admin-fields"
+            style="display: none; border-top: 1px solid var(--border-subtle); padding-top: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--blue-light);">🛡️ System Administrator Privileges</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+              You have full administrative access to dispatch operations, driver telemetry, escrow management, and audit logs.
+            </p>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 2rem;">
+            <button type="submit" class="btn btn-primary btn-lg" id="btn-save-profile">
+              💾 Save Profile Settings
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Mobile Bottom App Dock for Smartphones -->
+  <nav class="driver-mobile-bottom-nav">
+    <a href="javascript:goToDashboard()" class="driver-mob-nav-btn" id="prof-mob-driver-link">
+      <span class="driver-mob-nav-icon">📊</span>
+      <span>Dashboard</span>
+    </a>
+    <a href="/profile.html" class="driver-mob-nav-btn active">
+      <span class="driver-mob-nav-icon">👤</span>
+      <span>Profile</span>
+    </a>
+    <a href="javascript:api.logout()" class="driver-mob-nav-btn">
+      <span class="driver-mob-nav-icon">🚪</span>
+      <span>Logout</span>
+    </a>
+  </nav>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/js/i18n.js?v=5.0"></script>
+  <script src="/js/audio-alerts.js?v=5.0"></script>
+  <script src="/js/api.js?v=5.0"></script>
+  <script>
+    let currentUserRole = null;
+    let base64Avatar = '';
+    let base64Banner = '';
+
+    function goToDashboard() {
+      if (currentUserRole === 'TRANSPORTER') {
+        window.location.href = '/transporter.html';
+      } else if (currentUserRole === 'ADMIN') {
+        window.location.href = '/admin.html';
+      } else {
+        window.location.href = '/driver.html';
+      }
+    }
+
+    function handleAvatarUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          base64Avatar = e.target.result;
+          document.getElementById('avatar-display').innerHTML = `<img src="${base64Avatar}" alt="Avatar" />`;
+          AudioAlerts.playChime('notification');
+          showToast('Profile photo ready. Click Save to persist.', 'info');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleBannerUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          base64Banner = e.target.result;
+          document.getElementById('banner-bg').style.backgroundImage = `url(${base64Banner})`;
+          AudioAlerts.playChime('notification');
+          showToast('Banner image ready. Click Save to persist.', 'info');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function loadProfile() {
+      try {
+        const me = await api.getMe();
+        if (!me || !me.authenticated) {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const user = me.user;
+        currentUserRole = user.role;
+
+        const driverLink = document.getElementById('prof-mob-driver-link');
+        if (driverLink) {
+          if (user.role === 'TRANSPORTER') {
+            driverLink.href = '/transporter.html';
+            driverLink.querySelector('.driver-mob-nav-icon').textContent = '🏢';
+            driverLink.querySelector('span:last-child').textContent = 'Shipper';
+          } else if (user.role === 'ADMIN') {
+            driverLink.href = '/admin.html';
+            driverLink.querySelector('.driver-mob-nav-icon').textContent = '🛡️';
+            driverLink.querySelector('span:last-child').textContent = 'Admin';
+          } else {
+            driverLink.href = '/driver.html';
+            driverLink.querySelector('.driver-mob-nav-icon').textContent = '🚚';
+            driverLink.querySelector('span:last-child').textContent = 'Driver';
+          }
+        }
+
+        document.getElementById('user-display-name').textContent = user.name || 'User Profile';
+        document.getElementById('user-display-email').textContent = user.email || '';
+
+        const badge = document.getElementById('user-role-badge');
+        badge.textContent = user.role || 'USER';
+        badge.className = `user-role-badge role-${(user.role || 'driver').toLowerCase()}`;
+
+        const ratingVal = (user.role === 'DRIVER' ? user.rating : user.shipperRating) || 5.0;
+        document.getElementById('user-trust-rating').textContent = `⭐ ${ratingVal.toFixed(1)} / 5.0`;
+
+        if (user.avatarUrl) {
+          base64Avatar = user.avatarUrl;
+          document.getElementById('avatar-display').innerHTML = `<img src="${user.avatarUrl}" alt="Avatar" />`;
+        } else {
+          document.getElementById('avatar-display').textContent = (user.name || 'U').charAt(0).toUpperCase();
+        }
+
+        if (user.bannerUrl) {
+          base64Banner = user.bannerUrl;
+          document.getElementById('banner-bg').style.backgroundImage = `url(${user.bannerUrl})`;
+        }
+
+        // Fill form fields
+        document.getElementById('prof-name').value = user.name || '';
+        document.getElementById('prof-email').value = user.email || '';
+        document.getElementById('prof-phone').value = user.phone || '';
+        document.getElementById('prof-upi').value = user.upiId || '';
+
+        // Role-specific fields visibility & population
+        document.getElementById('driver-fields').style.display = 'none';
+        document.getElementById('transporter-fields').style.display = 'none';
+        document.getElementById('admin-fields').style.display = 'none';
+
+        if (user.role === 'DRIVER') {
+          document.getElementById('driver-fields').style.display = 'block';
+          document.getElementById('prof-vehicle-num').value = user.vehicleNumber || '';
+          document.getElementById('prof-vehicle-type').value = user.vehicleType || '';
+          document.getElementById('prof-additional-vehicles').value = user.additionalVehicles || '';
+          document.getElementById('prof-license').value = user.licenseNumber || '';
+        } else if (user.role === 'TRANSPORTER') {
+          document.getElementById('transporter-fields').style.display = 'block';
+          document.getElementById('prof-company').value = user.companyName || '';
+          document.getElementById('prof-gst').value = user.gstNumber || '';
+          document.getElementById('prof-address').value = user.companyAddress || '';
+        } else if (user.role === 'ADMIN') {
+          document.getElementById('admin-fields').style.display = 'block';
+        }
+
+      } catch (err) {
+        showToast('Could not load profile: ' + (err.message || 'Server error'), 'error');
+      }
+    }
+
+    async function handleSaveProfile(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-profile');
+
+      const payload = new FormData();
+      payload.append('name', document.getElementById('prof-name').value);
+      payload.append('phone', document.getElementById('prof-phone').value);
+      payload.append('upiId', document.getElementById('prof-upi').value);
+      if (base64Avatar) payload.append('avatarUrl', base64Avatar);
+      if (base64Banner) payload.append('bannerUrl', base64Banner);
+
+      if (currentUserRole === 'DRIVER') {
+        payload.append('vehicleNumber', document.getElementById('prof-vehicle-num').value);
+        payload.append('vehicleType', document.getElementById('prof-vehicle-type').value);
+        payload.append('additionalVehicles', document.getElementById('prof-additional-vehicles').value);
+        payload.append('licenseNumber', document.getElementById('prof-license').value);
+      } else if (currentUserRole === 'TRANSPORTER') {
+        payload.append('companyName', document.getElementById('prof-company').value);
+        payload.append('gstNumber', document.getElementById('prof-gst').value);
+        payload.append('companyAddress', document.getElementById('prof-address').value);
+      }
+
+      try {
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        await api.updateProfile(payload);
+
+        AudioAlerts.playChime('success');
+        showToast('Profile updated successfully!', 'success');
+        setTimeout(() => loadProfile(), 600);
+      } catch (err) {
+        showToast(err.message || 'Error updating profile', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 Save Profile Settings';
+      }
+    }
+
+    async function triggerProfileRefresh() {
+      const btn = document.getElementById('btn-global-refresh');
+      if (btn) btn.classList.add('spinning');
+      try {
+        await loadProfile();
+        showToast('Profile refreshed', 'info');
+      } catch (e) {
+        showToast('Error refreshing profile', 'error');
+      } finally {
+        setTimeout(() => {
+          if (btn) btn.classList.remove('spinning');
+        }, 600);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadProfile);
+  </script>
+</body>
+
+</html>

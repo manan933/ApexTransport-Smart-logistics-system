@@ -1,0 +1,414 @@
+================================================================================
+                    APEX TRANSPORT — ENTERPRISE FREIGHT OS
+                 HIGH-PRECISION AUTONOMOUS LOGISTICS PLATFORM
+                      COMPLETE PROJECT CONTEXT & MEMORY
+================================================================================
+Document Version: 3.5
+Project Directory: d:\TruckMate learnathon\TruckMate
+Last Updated: August 2026
+
+--------------------------------------------------------------------------------
+1. EXECUTIVE OVERVIEW & PLATFORM IDENTITY
+--------------------------------------------------------------------------------
+Apex Transport (formerly TruckMate / LogisticMS) is a production-grade, full-stack 
+cyber-logistics freight operating system engineered for the Indian commercial road 
+transport ecosystem. It connects Transporters (Shippers / Fleet Operators), Drivers 
+(Pilots / Owner-Operators), and Enterprise Admins into a real-time, high-precision 
+freight booking, live tracking, automated escrow payout, and auditing platform.
+
+AESTHETIC & BRAND IDENTITY:
+- Theme: Obsidian Charcoal & Emerald Cyber-Logistics Command Center
+- Primary Background: #0B0F17 (Deep Obsidian) & #111827 (Charcoal Card Surface)
+- Accent Colors: #10B981 / #059669 (Emerald Freight Glow), #34D399 (Active Transit),
+  #F59E0B (Amber Warning/Pending), #EF4444 (Critical SOS/Alert), #6366F1 (Digital HUD)
+- Primary UI Typography: Google Sans / Outfit (Modern, high-legibility sans-serif)
+- Brand Display Typography: Boldonse (Reserved exclusively for APEX branding)
+- Tone: High-tech, military-grade telematics command deck. Strictly avoids generic blues.
+
+--------------------------------------------------------------------------------
+2. SYSTEM ARCHITECTURE & TECH STACK
+--------------------------------------------------------------------------------
+BACKEND ARCHITECTURE (Spring Boot 3.5.11 / Java 17):
+- Framework: Spring Boot 3.5.11 with Spring Data JPA & Spring Security Crypto (BCrypt).
+- Web Layer: REST API (@RestController) with explicit JSON serialization and 
+  Jakarta HttpSession cookie-based stateful authentication.
+- Single-Page Application (SPA) Forwarding: Custom SpaForwardingController routes all 
+  HTML5 navigation paths (/, /login, /transporter/**, /driver/**, /admin/**, /profile/**) 
+  directly to static HTML dashboards.
+- Database: Dual-mode support:
+  * Local Dev: H2 In-Memory with schema auto-generation and DataSeeder.
+  * Production: PostgreSQL with Hibernate dialect and connection pooling.
+- Storage Service (StorageService.java): Local disk & Base64 image processor handling 
+  Proof of Delivery (POD) signed slips, cargo consignment photos, PDF invoices, 
+  and user profile avatars.
+- Audit & Security (AuditLogService.java): Synchronous event audit logger capturing 
+  every platform action, user role, category, and client IP address.
+
+FRONTEND ARCHITECTURE:
+- Pure Vanilla Web Standards: Pure HTML5, Vanilla CSS3 (main.css), and Modular ES6 
+  JavaScript (api.js, i18n.js, audio-alerts.js) for ultra-fast, zero-dependency rendering.
+- Telematics & Mapping: Leaflet.js with OpenStreetMap tiles and dynamic route polylines.
+- Audio Synthesis: Web Audio API Dual-Tone Synthesizer (C5 -> G5 sine-wave pulses) 
+  for real-time harmonic chimes on load claiming, transit dispatch, and POD delivery.
+- Internationalization (i18n): Client-side bilingual engine supporting English and 
+  phonetic Hinglish tailored for Indian transport yard operators.
+
+--------------------------------------------------------------------------------
+3. THE 30 MANDATORY FEATURES & IMPLEMENTATION SPECIFICATIONS
+--------------------------------------------------------------------------------
+#1.  DIRECT GOOGLE MAPS REDIRECTION:
+     Automated origin and destination URL generation:
+     `https://www.google.com/maps/dir/?api=1&origin=...&destination=...`
+     Available across all order cards on Transporter and Driver dashboards.
+
+#2.  HINGLISH / ENGLISH GLOBAL LANGUAGE SWITCHER:
+     Universal persistent language switcher in top navigation and sidebars powered 
+     by `i18n.js`. Seamless instant switching between English and Indian freight hub 
+     Hinglish (e.g., "Naya Consignment", "Gaadi Raste Me Hai", "POD Check Karein").
+
+#3.  AUTHENTICATED SIGN-IN & REMOVAL OF 1-CLICK DEMO BUTTONS:
+     Replaced insecure 1-click login buttons with standard authenticated registration 
+     and login flows backed by BCrypt password hashing and role validation.
+
+#4.  REDESIGNED LANDING / LOGIN PAGE:
+     Hero landing with centered "APEX TRANSPORT" in Boldonse font, concise subtitle, 
+     "Get Started" smooth-scroll button, and "What is Apex Transport" interactive guide.
+
+#5.  CLEAN HEADER WITHOUT "SYSTEM ONLINE" BADGE:
+     Cleaned up the landing hero header and navigation bars across all templates.
+
+#6.  GOOGLE SANS & BOLDONSE TYPOGRAPHY:
+     Google Sans imported for all body text, data tables, metrics, and cards. Boldonse 
+     applied exclusively to the Apex Transport master brand logo.
+
+#7.  POD REVIEW & DRIVER RATING MODAL:
+     Transporters can inspect uploaded signed Proof of Delivery (POD) challans, release 
+     consignment payment, and submit a 1 to 5 star rating with written driver review.
+
+#8.  COMMODITIES DROPDOWN WITH CONDITIONAL "OTHERS" INPUT:
+     Preset dropdown containing 10 major Indian freight commodity classes + dynamic 
+     free-text input box when "Others" is selected.
+
+#9.  DEDICATED ACTIVITY & TELEMATICS AUDIT LOGS TAB:
+     Transporter and Driver portals feature dedicated Audit Log tabs wired to 
+     `/api/transporter/logs` and `/api/driver/logs` showing full chronological timestamps.
+
+#10. LINKEDIN / YOUTUBE STYLE PROFILE HEADER:
+     `profile.html` features a full-width background cover banner with an overlapping 
+     circular avatar badge and verified role badges.
+
+#11. DIRECT PHOTO UPLOAD & CAMERA CAPTURE:
+     Replaced manual URL inputs with instant local file / device camera capture with 
+     real-time Base64 thumbnail preview.
+
+#12. OPTIONAL CARGO DESCRIPTION FIELD:
+     Multi-line description textarea in consignment creation modal allowing detailed 
+     packing, pallet, or handling instructions.
+
+#13. DISPATCH CONTACT PERSON WITH AUTOFILL:
+     Contact person name and phone input with a 1-click "Autofill My Profile Details" 
+     checkbox that pulls logged-in user credentials.
+
+#14. PICKUP DATE & TIME SLOT PICKER:
+     Date calendar selector + 5 Indian commercial transit windows: Morning (6AM-12PM), 
+     Afternoon (1PM-4PM), Evening (4PM-8PM), Night (8PM-6AM), and 24x7 Priority Dispatch.
+
+#15. CARGO DIMENSIONS (L x W x H), UNITS & PACKAGE COUNTS:
+     Full volumetric parameter support: Length, Width, Height, Unit (cm / inch / ft / m), 
+     and Total Package/Pallet count.
+
+#16. FRAGILE CARGO FLAG & GLOWING SPEC BADGE:
+     Checkbox with visual glowing cyan/coral alert badges displayed across load boards.
+
+#17. HAZARDOUS CARGO (HAZMAT) FLAG & WARNING BADGE:
+     Checkbox with amber hazard warning badges across order manifests.
+
+#18. COLD CHAIN TEMPERATURE CONTROL (°C):
+     Refrigerated transport toggle with target temperature input (e.g. -18°C) and 
+     snowflake indicator badge.
+
+#19. STACKABLE CARGO FLAG:
+     Cargo stackability boolean flag persisted in database and displayed on freight board.
+
+#20. COMPREHENSIVE COMMERCIAL VEHICLE TYPES:
+     12 vehicle classes: Tata Ace (1 Ton), Pickup (1.5-2 Ton), Eicher 14ft (4-6 Ton), 
+     Eicher 17ft-19ft (7-9 Ton), 20ft-24ft Container (10-15 Ton), 32ft Multi-Axle (16-20 Ton), 
+     40ft Heavy Trailer (25-35 Ton), Tanker, Flatbed, Reefer Container, and ODC Carrier.
+
+#21. AUTO-CALCULATED ROUTE DISTANCE (KM):
+     Dynamic route distance calculator estimating road travel kilometers between Indian cities.
+
+#22. COMMERCIAL INVOICE + UP TO 5 CARGO PHOTOS:
+     Multi-file document picker supporting commercial invoice / e-Way bill attachment 
+     and up to 5 consignment photos with interactive gallery preview.
+
+#23. DRIVER NOTES & SPECIAL INSTRUCTIONS:
+     Dedicated notes field passed directly to the claiming pilot driver (e.g., gate pass, 
+     dock number, preferred route).
+
+#24. TRUST RATINGS DISPLAYED UNDER USER NAMES:
+     Shipper Trust (⭐ 4.9) and Driver Rating (⭐ 4.9) dynamically rendered under user chips 
+     and navigation headers across all screens.
+
+#25. DRIVER RATING SHIPPER UPON TRIP COMPLETION:
+     Driver is presented with a 5-star rating and review modal for the transporter 
+     immediately after uploading the POD and completing delivery.
+
+#26. MANDATORY PROOF OF DELIVERY (POD) CAPTURE:
+     Driver delivery completion requires a signed physical delivery slip photo or camera 
+     capture before the order status transitions to COMPLETED.
+
+#27. RICH FREIGHT BOARD SPECIFICATIONS:
+     Driver available loads board displays comprehensive spec sheets: cargo dimensions, 
+     weight, distance in km, special handling tags, site contact, notes, and guaranteed payout.
+
+#28. LIVE DIGITAL HUD TIME CLOCK:
+     Real-time precision digital clock widget in the topbar and sidebar with 1-second 
+     ticking IST time updates.
+
+#29. COLLAPSIBLE SIDEBAR NAVIGATION:
+     Sidebar layout featuring Fleet Command, Freight Board, Consignment Creator, 
+     Activity Logs, Profile, and Secure Logout.
+
+#30. REAL-TIME WEB AUDIO NOTIFICATION SYNTHESIZER:
+     Browser-native Web Audio API synthesizer triggering harmonic double-tone audio 
+     chimes on consignment posting, driver acceptance, transit dispatch, and delivery.
+
+--------------------------------------------------------------------------------
+4. DATABASE SCHEMA & ENTITY MODELS
+--------------------------------------------------------------------------------
+1. USER ENTITY (`User.java` -> table `users`):
+   - `id`: Long (Primary Key)
+   - `name`: String
+   - `email`: String (Unique)
+   - `password`: String (BCrypt hash)
+   - `role`: Enum [ADMIN, TRANSPORTER, DRIVER]
+   - `phone`: String
+   - `companyName`: String
+   - `vehicleNumber`: String
+   - `vehicleType`: String
+   - `avatarUrl`: String
+   - `bannerUrl`: String
+   - `rating`: Double (Driver rating, default 5.0)
+   - `totalDeliveries`: Integer
+   - `shipperRating`: Double (Shipper trust score, default 5.0)
+   - `totalShippedOrders`: Integer
+   - `status`: Enum [ACTIVE, INACTIVE, SUSPENDED]
+   - `createdAt`: LocalDateTime
+
+2. ORDER ENTITY (`Order.java` -> table `orders`):
+   - `id`: Long (Primary Key)
+   - `transporter`: User (ManyToOne)
+   - `driver`: User (ManyToOne, nullable)
+   - `pickupLocation`: String
+   - `dropLocation`: String
+   - `goodsType`: String
+   - `goodsDescription`: String
+   - `weight`: Double (in KG / Tons)
+   - `amount` / `price`: Double (Escrow fare in INR)
+   - `status`: Enum [PENDING, ACCEPTED, IN_TRANSIT, COMPLETED, CANCELLED]
+   - `contactPersonName`: String
+   - `contactPersonPhone`: String
+   - `useShipperDetails`: Boolean
+   - `pickupDate`: String
+   - `pickupTimeSlot`: String
+   - `dimensionLength`: Double
+   - `dimensionWidth`: Double
+   - `dimensionHeight`: Double
+   - `dimensionUnit`: String
+   - `packageCount`: Integer
+   - `isFragile`: Boolean
+   - `isHazardous`: Boolean
+   - `isTempControlled`: Boolean
+   - `targetTemp`: Double
+   - `isStackable`: Boolean
+   - `vehicleType`: String
+   - `distanceKm`: Double
+   - `invoiceUrl`: String
+   - `docUrls`: List<String> / String
+   - `driverNotes`: String
+   - `podImageUrl`: String
+   - `driverRating`: Double
+   - `driverReview`: String
+   - `shipperRating`: Double
+   - `shipperReview`: String
+   - `pickupLat`, `pickupLng`: Double
+   - `dropLat`, `dropLng`: Double
+   - `currentLat`, `currentLng`: Double
+   - `createdAt`, `acceptedAt`, `startedAt`, `completedAt`: LocalDateTime
+
+3. AUDIT LOG ENTITY (`AuditLog.java` -> table `audit_logs`):
+   - `id`: Long (Primary Key)
+   - `user`: User (ManyToOne, nullable)
+   - `role`: String
+   - `action`: String
+   - `category`: String [AUTH, ORDER, TELEMATICS, ESCROW, SECURITY]
+   - `details`: String
+   - `ipAddress`: String
+   - `createdAt`: LocalDateTime
+
+4. NOTIFICATION ENTITY (`Notification.java` -> table `notifications`):
+   - `id`: Long (Primary Key)
+   - `user`: User (ManyToOne)
+   - `title`: String
+   - `message`: String
+   - `isRead`: Boolean
+   - `createdAt`: LocalDateTime
+
+--------------------------------------------------------------------------------
+5. REST API ENDPOINT CATALOG
+--------------------------------------------------------------------------------
+AUTH CONTROLLER (`/api/auth`):
+- `POST /api/auth/login`          : Authenticate with email & password -> Sets session cookie
+- `POST /api/auth/register`       : Register new Transporter or Driver account
+- `GET  /api/auth/me`             : Returns 200 OK with { authenticated: true/false, user: {...} }
+- `POST /api/auth/logout`         : Invalidate session
+- `POST /api/auth/profile`        : Update profile details, vehicle info, avatar/banner base64
+
+TRANSPORTER CONTROLLER (`/api/transporter`):
+- `GET  /api/transporter/dashboard`             : Summary metrics, active/pending counts, orders
+- `GET  /api/transporter/orders`                : Full list of transporter's posted orders
+- `POST /api/transporter/orders/create`         : Post new consignment with full specs & files
+- `POST /api/transporter/orders/{id}/rate-driver`: Inspect POD, release payment & submit rating
+- `GET  /api/transporter/logs`                  : Transporter activity & audit logs
+
+DRIVER CONTROLLER (`/api/driver`):
+- `GET  /api/driver/dashboard`                  : Driver dashboard metrics & current job
+- `GET  /api/driver/orders/available`           : Available loads matching vehicle/location
+- `GET  /api/driver/orders/current`             : Active accepted/in-transit job
+- `POST /api/driver/orders/{id}/accept`         : Claim and lock an available consignment
+- `POST /api/driver/orders/{id}/start`          : Start transit & activate GPS tracking
+- `POST /api/driver/orders/{id}/complete`       : Submit signed POD challan & complete delivery
+- `POST /api/driver/orders/{id}/rate-shipper`   : Submit shipper rating & feedback
+- `GET  /api/driver/logs`                       : Driver trip and audit logs
+
+ADMIN CONTROLLER (`/api/admin`):
+- `GET  /api/admin/dashboard`                   : Global platform telemetry & revenue metrics
+- `GET  /api/admin/orders`                      : All platform orders across India
+- `GET  /api/admin/users`                       : All registered users and driver fleet
+- `GET  /api/admin/logs`                        : Master platform audit trails
+- `POST /api/admin/users/{id}/toggle-status`    : Suspend or activate accounts
+
+SHARED / UTILITY CONTROLLER (`/api`):
+- `GET  /api/locations/suggest`                 : Auto-suggest major Indian industrial hubs
+- `GET  /api/orders/{id}/coordinates`           : Real-time order origin, dest & current GPS
+- `GET  /api/notifications/recent`              : Unread & recent in-app notifications
+- `POST /api/notifications/mark-read/{id}`      : Mark specific notification as read
+
+--------------------------------------------------------------------------------
+6. SEED USERS & LOGIN CREDENTIALS
+--------------------------------------------------------------------------------
+The database is pre-seeded with test users in `DataSeeder.java`:
+
+1. TRANSPORTER / SHIPPER:
+   - Email: `vikram@transporter.com`
+   - Password: `vikram123`
+   - Name: Vikram Sharma
+   - Company: Sharma Freight & Logistics Ltd
+   - Phone: +91 98201 12345
+   - Initial Trust Score: ⭐ 4.9 (24 Shipped Orders)
+
+2. DRIVER PILOT:
+   - Email: `rajesh@driver.com`
+   - Password: `rajesh123`
+   - Name: Rajesh Singh
+   - Phone: +91 97654 32190
+   - Vehicle: Container Truck (32 Ft) — MH 04 AZ 4589
+   - Initial Rating: ⭐ 4.9 (48 Deliveries)
+
+3. SUPER ADMIN:
+   - Email: `admin@apex.com`
+   - Password: `admin123`
+   - Name: Super Admin
+   - Role: System Master Admin
+
+--------------------------------------------------------------------------------
+7. EVOLUTION & RESOLUTION CHRONOLOGY (KEY LESSONS LEARNED)
+--------------------------------------------------------------------------------
+1. SESSION PROBE / 401 EXCEPTION HARDENING:
+   - Issue: When users refreshed unauthenticated dashboards, `/api/auth/me` returned 401, 
+     triggering unhandled promise rejections ("Error refreshing pilot deck" toasts).
+   - Fix: Updated `RestAuthController.java` to return HTTP 200 with `{ "authenticated": false }`. 
+     Updated `api.js` to handle unauthenticated state smoothly by redirecting to `/login.html`.
+
+2. REMOVAL OF LEGACY THYMELEAF TEMPLATES:
+   - Issue: Legacy templates in `src/main/resources/templates/` with old blue styling were 
+     intermittently intercepted by Spring Boot's ThymeleafViewResolver on non-.html paths.
+   - Fix: Completely removed `templates/` directory, deleted Thymeleaf starters from `pom.xml`, 
+     and routed all navigation via `SpaForwardingController.java` to modern static SPAs.
+
+3. ASSET CACHE-BUSTING:
+   - Issue: Browser aggressive caching caused users to occasionally see stale CSS or JS.
+   - Fix: Added `?v=3.5` query versioning to all CSS and JS script tags across all HTML files.
+
+4. PRICE / ESCROW MAPPING:
+   - Issue: `Order` entity `amount` property vs frontend `price` property resulted in undefined spend.
+   - Fix: Updated `RestTransporterController.formatOrder()` to expose both `amount` and `price` 
+     keys seamlessly.
+
+--------------------------------------------------------------------------------
+8. DIRECTORY STRUCTURE
+--------------------------------------------------------------------------------
+d:\TruckMate learnathon\TruckMate\
+├── pom.xml                                   <- Maven project descriptor (Spring Boot 3.5.11)
+├── PROJECT_CONTEXT_AND_MEMORY.txt            <- This master context document
+├── src/main/java/com/truckmate/
+│   ├── TruckMateApplication.java             <- Spring Boot main entrypoint
+│   ├── config/
+│   │   ├── DataSeeder.java                   <- Seed users & initial orders
+│   │   └── SpaForwardingController.java      <- Universal HTML5 SPA route controller
+│   ├── controller/
+│   │   ├── ApiController.java                <- Shared utility endpoints (locations, notifications)
+│   │   ├── RestAdminController.java          <- Admin oversight endpoints
+│   │   ├── RestAuthController.java           <- Auth, registration, profile endpoints
+│   │   ├── RestDriverController.java         <- Driver load board, POD & rating endpoints
+│   │   └── RestTransporterController.java    <- Consignment creation, logs, review endpoints
+│   ├── entity/
+│   │   ├── AuditLog.java                     <- Platform audit trails
+│   │   ├── Notification.java                 <- In-app alert entities
+│   │   ├── Order.java                        <- Consignment orders with 30-feature schema
+│   │   └── User.java                         <- Users, roles, ratings, profile banners
+│   ├── repository/
+│   │   ├── AuditLogRepository.java           <- JPA queries for audit trails
+│   │   ├── NotificationRepository.java       <- In-app notifications repository
+│   │   ├── OrderRepository.java              <- Consignment lifecycle queries
+│   │   └── UserRepository.java               <- User authentication queries
+│   └── service/
+│       ├── AdminService.java                 <- Admin business logic
+│       ├── AuditLogService.java              <- Synchronous event logging engine
+│       ├── DriverService.java                <- Driver workflows & POD verification
+│       ├── NotificationService.java          <- Push notification engine
+│       ├── StorageService.java               <- File & Base64 storage engine
+│       └── TransporterService.java           <- Consignment dispatching & pricing logic
+└── src/main/resources/
+    ├── application.properties                <- Spring Boot & H2/PostgreSQL config
+    └── static/
+        ├── admin.html                        <- Master Admin Command Deck
+        ├── driver.html                       <- Driver Pilot Cockpit & Navigation HUD
+        ├── index.html                        <- Redirects to login
+        ├── login.html                        <- Apex Transport Hero Landing & Auth
+        ├── profile.html                      <- LinkedIn/YouTube style Profile Manager
+        ├── transporter.html                  <- Transporter Command Deck & Creator Modal
+        ├── css/
+        │   └── main.css                      <- Obsidian Charcoal cyber-logistics design system
+        └── js/
+            ├── api.js                        <- Full client-side REST API SDK
+            ├── audio-alerts.js               <- Web Audio API synthesized chimes
+            └── i18n.js                       <- English & Hinglish translation engine
+
+--------------------------------------------------------------------------------
+9. HOW TO RUN, BUILD & VERIFY
+--------------------------------------------------------------------------------
+1. START THE SERVER:
+   ```bash
+   mvn clean spring-boot:run
+   ```
+2. OPEN IN BROWSER:
+   Navigate to: `http://localhost:8080/login` or `http://localhost:8080/`
+3. TEST LOGINS:
+   - Transporter: `vikram@transporter.com` / `vikram123`
+   - Driver: `rajesh@driver.com` / `rajesh123`
+   - Admin: `admin@apex.com` / `admin123`
+4. TEST LANGUAGE TOGGLE:
+   Click "English / Hinglish" toggle in the top-right header to switch instantaneously.
+================================================================================

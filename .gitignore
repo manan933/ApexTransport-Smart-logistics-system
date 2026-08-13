@@ -1,0 +1,92 @@
+# =========================================================================
+# MAVEN BUILD OUTPUT & COMPILED CLASSES
+# =========================================================================
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# =========================================================================
+# IDE & EDITOR FILES
+# =========================================================================
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.idea_modules/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+.factorypath
+
+# VS Code / Antigravity IDE
+.vscode/
+.antigravity/
+*.code-workspace
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+
+# =========================================================================
+# SECRETS, CREDENTIALS & ENVIRONMENT CONFIG
+# =========================================================================
+*.env
+*.env.local
+*.env.production
+firebase-service-account*.json
+application-local.properties
+application-local.yml
+application-secret.properties
+application-secret.yml
+
+# =========================================================================
+# LOGS, TEMPORARY & SYSTEM FILES
+# =========================================================================
+*.log
+log/
+logs/
+*.sys
+*.tmp
+*.temp
+tmp/
+temp/
+scratch/
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# =========================================================================
+# LOCAL DATABASES & H2 FILES
+# =========================================================================
+*.db
+*.h2.db
+*.mv.db
+*.trace.db
+
+# =========================================================================
+# FRONTEND BUILD & DEPENDENCY CACHES
+# =========================================================================
+node_modules/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache

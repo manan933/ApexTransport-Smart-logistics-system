@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Transporter Portal | Apex Transport</title>
+  <link rel="stylesheet" href="/css/main.css?v=6.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="/js/theme.js?v=6.0"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body {
+      font-weight: 500;
+    }
+    .autocomplete-suggestions-box {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 2000;
+      background: var(--bg-surface-elevated, #0E1420);
+      border: 1px solid var(--border-emerald, #10B981);
+      border-radius: var(--radius-md, 8px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 4px;
+      display: none;
+    }
+    .suggestion-item {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--text-primary, #F8FAFC);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.05));
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s ease;
+    }
+    .suggestion-item:hover, .suggestion-item.active {
+      background: rgba(16, 185, 129, 0.18);
+      color: var(--emerald-light, #34D399);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ambient-bg"></div>
+
+  <div class="app-wrapper">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div>
+          <div class="brand-name brand-apex">Apex Transport</div>
+          <div class="brand-tag mono" data-i18n="tag_transporter">ENTERPRISE SHIPPER DESK</div>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Day / Night Theme Toggle Button -->
+        <button class="btn-theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
+          ☀️ <span class="theme-label">Day</span>
+        </button>
+
+        <!-- Live HUD Clock -->
+        <div class="live-clock-widget" style="margin-bottom: 0; padding: 6px 12px;">
+          <div class="live-hud-clock-time" style="font-size: 0.95rem;">00:00:00</div>
+          <span style="margin: 0 6px; color: var(--border-prominent);">|</span>
+          <div class="live-hud-clock-date" style="font-size: 0.75rem;">TODAY</div>
+        </div>
+
+        <!-- Language Toggle -->
+        <div class="navbar-lang-container"></div>
+
+        <!-- Global Topbar Refresh Button -->
+        <button class="btn-topbar-refresh" id="btn-global-refresh" onclick="triggerTransporterRefresh()" title="Refresh Live Data">
+          <span class="refresh-icon">🔄</span> <span class="refresh-label" data-i18n="btn_refresh">Refresh</span>
+        </button>
+
+        <button class="btn btn-primary" onclick="openConsignmentModal()">
+          <span>+</span> <span data-i18n="btn_post_load">Post New Consignment</span>
+        </button>
+
+        <a href="/profile.html" class="user-chip" style="text-decoration: none;">
+          <div class="user-avatar" id="nav-avatar">S</div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.85rem;" id="nav-username">Shipper Admin</div>
+            <div style="font-size: 0.72rem; color: var(--amber-light); font-weight: 700;" id="nav-user-rating">⭐ 5.0
+              (Shipper)</div>
+          </div>
+        </a>
+
+        <button class="btn btn-secondary btn-sm" onclick="api.logout()" data-i18n="nav_logout">Logout</button>
+      </div>
+    </header>
+
+    <div class="sidebar-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar">
+        <div class="sidebar-nav">
+          <div class="sidebar-item active" id="side-dashboard-btn" onclick="switchMainTab('dashboard')">
+            <span class="sidebar-item-icon">📊</span>
+            <span data-i18n="tab_active_orders">Fleet Command</span>
+          </div>
+          <div class="sidebar-item" id="side-logs-btn" onclick="switchMainTab('logs')">
+            <span class="sidebar-item-icon">📜</span>
+            <span data-i18n="tab_activity_logs">Activity & Telematics</span>
+          </div>
+          <div class="sidebar-item" onclick="openConsignmentModal()">
+            <span class="sidebar-item-icon">➕</span>
+            <span data-i18n="btn_post_load">Post Freight</span>
+          </div>
+          <a href="/profile.html" class="sidebar-item" style="text-decoration: none;">
+            <span class="sidebar-item-icon">👤</span>
+            <span data-i18n="nav_profile">Shipper Profile</span>
+          </a>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="live-clock-widget">
+            <div>
+              <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">SYSTEM CLOCK (IST)</div>
+              <div class="live-hud-clock-time">00:00:00</div>
+            </div>
+            <div class="live-hud-clock-date">--</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="api.logout()" data-i18n="nav_logout">🚪
+            Logout</button>
+        </div>
+      </aside>
+
+      <!-- Main Workspace Container -->
+      <main class="main-container" style="flex: 1; padding: 1.5rem 2rem;">
+
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard">
+          <!-- KPI Stats Grid -->
+          <div class="kpi-grid">
+            <div class="kpi-card kpi-emerald">
+              <div class="kpi-header">
+                <span class="kpi-label" data-i18n="kpi_active_loads">Active Shipments</span>
+                <div class="kpi-icon">🚚</div>
+              </div>
+              <div class="kpi-value" id="kpi-active-count">0</div>
+              <div class="kpi-meta"><span style="color: var(--emerald-light);">●</span> <span
+                  data-i18n="status_in_transit">In Transit</span></div>
+            </div>
+
+            <div class="kpi-card kpi-amber">
+              <div class="kpi-header">
+                <span class="kpi-label" data-i18n="kpi_pending_assignment">Pending Driver Match</span>
+                <div class="kpi-icon">⏳</div>
+              </div>
+              <div class="kpi-value" id="kpi-pending-count">0</div>
+              <div class="kpi-meta"><span style="color: var(--amber-light);">●</span> <span
+                  data-i18n="status_posted">Awaiting Driver</span></div>
+            </div>
+
+            <div class="kpi-card kpi-emerald">
+              <div class="kpi-header">
+                <span class="kpi-label" data-i18n="kpi_completed_deliveries">Successful Deliveries</span>
+                <div class="kpi-icon">✅</div>
+              </div>
+              <div class="kpi-value" id="kpi-completed-count">0</div>
+              <div class="kpi-meta"><span style="color: var(--emerald-light);">●</span> Verified PODs</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label" data-i18n="kpi_freight_spend">Total Freight Escrow</span>
+                <div class="kpi-icon">💳</div>
+              </div>
+              <div class="kpi-value mono" id="kpi-spend-val" style="color: var(--emerald-light);">₹0</div>
+              <div class="kpi-meta"><span style="color: var(--text-muted);">●</span> 100% Escrow Protected</div>
+            </div>
+          </div>
+
+          <!-- Live Fleet Telematics Radar & Live Pilot Stream (Split Layout) -->
+          <div style="display: grid; grid-template-columns: 1fr 340px; gap: 16px; margin-bottom: 2rem;" class="telematics-radar-grid">
+            
+            <!-- Left (68%): Telematics Map -->
+            <div class="map-card" style="margin-bottom: 0;">
+              <div class="map-header">
+                <div class="map-title">
+                  <span class="status-indicator"></span>
+                  <span data-i18n="map_radar_title">National Logistics Telematics Radar</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-secondary btn-sm" onclick="triggerTransporterRefresh()" title="Update Live Driver GPS Locations">
+                    🔄 Update Driver Locations
+                  </button>
+                </div>
+              </div>
+              <div id="radar-map" style="height: 380px; width: 100%;"></div>
+            </div>
+
+            <!-- Right (32%): Live Pilot & Dispatch Stream -->
+            <div class="card" style="display: flex; flex-direction: column; height: 100%; margin-bottom: 0; padding: 0; overflow: hidden;">
+              <div class="card-header" style="padding: 12px 16px; border-bottom: 1px solid var(--border-subtle);">
+                <div class="card-title" style="font-size: 0.9rem;">
+                  <span>📡</span> Live Telematics Stream
+                </div>
+                <span class="badge badge-transit" style="font-size: 0.7rem; padding: 2px 6px;">GPS LIVE</span>
+              </div>
+              <div id="live-pilot-stream" style="flex: 1; padding: 12px; max-height: 330px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                <div style="text-align: center; color: var(--text-muted); padding: 2rem 0; font-size: 0.85rem;">
+                  Connecting to driver GPS telematics...
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Consignments Roster Table -->
+          <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-header">
+              <div class="card-title">
+                <span>📦</span> <span data-i18n="tab_active_orders">Enterprise Consignments & Dispatches</span>
+              </div>
+              <input type="text" id="order-search" class="form-control"
+                placeholder="Search loads by city, ID, driver..."
+                style="max-width: 280px; padding: 6px 12px; font-size: 0.85rem;" oninput="renderOrdersTable()" />
+            </div>
+
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Consignment ID</th>
+                    <th data-i18n="label_pickup">Route (Origin → Destination)</th>
+                    <th data-i18n="label_weight">Cargo Specifications</th>
+                    <th data-i18n="col_driver">Assigned Driver</th>
+                    <th data-i18n="label_freight_price">Escrow Value</th>
+                    <th>Status</th>
+                    <th>Actions & Navigation</th>
+                  </tr>
+                </thead>
+                <tbody id="orders-tbody">
+                  <tr>
+                    <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading live
+                      dispatches...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOGS VIEW -->
+        <div id="view-logs" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>📜</span> <span data-i18n="tab_activity_logs">Shipper Activity & Telematics Log Trail</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="loadActivityLogs()">⟳ Refresh Logs</button>
+            </div>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Action Event</th>
+                    <th>Reference Order</th>
+                    <th>Telematics & Audit Details</th>
+                  </tr>
+                </thead>
+                <tbody id="shipper-logs-tbody">
+                  <tr>
+                    <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading
+                      activity logs...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Multi-Attribute Consignment Modal (All 15+ Parameters) -->
+  <div class="modal-backdrop" id="consignment-modal">
+    <div class="modal" style="max-width: 780px;">
+      <div class="modal-header">
+        <div class="card-title">
+          <span>📦</span> <span data-i18n="btn_post_load">Create Enterprise Consignment</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="closeConsignmentModal()">✕</button>
+      </div>
+
+      <form id="consignment-form" onsubmit="handlePostConsignment(event)">
+        <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+
+          <!-- Route Locations & Autocomplete Datalist -->
+          <datalist id="location-suggestions">
+            <option value="Mumbai Port Terminal, Mumbai, Maharashtra"></option>
+            <option value="Bhiwandi Logistics Hub, Thane, Maharashtra"></option>
+            <option value="JNPT Port, Navi Mumbai, Maharashtra"></option>
+            <option value="Pune Auto Cluster, Chakan, Maharashtra"></option>
+            <option value="Nehru Place Logistics Yard, New Delhi, Delhi"></option>
+            <option value="Okhla Industrial Area, New Delhi, Delhi"></option>
+            <option value="Gurugram Cyber Hub Freight Zone, Haryana"></option>
+            <option value="Noida Industrial Sector 62, Uttar Pradesh"></option>
+            <option value="Whitefield EPIP Logistics Zone, Bengaluru, Karnataka"></option>
+            <option value="Peenya Industrial Area, Bengaluru, Karnataka"></option>
+            <option value="Genome Valley Cold Chain, Hyderabad, Telangana"></option>
+            <option value="Patancheru Industrial Park, Hyderabad, Telangana"></option>
+            <option value="Chennai Harbor Freight Terminal, Chennai, Tamil Nadu"></option>
+            <option value="Sriperumbudur Industrial Hub, Chennai, Tamil Nadu"></option>
+            <option value="Surat Textile Market Hub, Surat, Gujarat"></option>
+            <option value="Sanand Industrial Estate, Ahmedabad, Gujarat"></option>
+            <option value="Kolkata Port Trust Yard, Kolkata, West Bengal"></option>
+            <option value="Bhubaneswar AIIMS Logistics Depot, Bhubaneswar, Odisha"></option>
+            <option value="Cuttack Malgodown Wholesale Hub, Cuttack, Odisha"></option>
+            <option value="Paradeep Port Freight Gate, Jagatsinghpur, Odisha"></option>
+            <option value="Nagpur Butibori Multi-Modal Cargo Hub, Maharashtra"></option>
+            <option value="Indore Pithampur Industrial Corridor, Madhya Pradesh"></option>
+            <option value="Jaipur Sitapura Industrial Area, Rajasthan"></option>
+            <option value="Chandigarh Freight Terminal, Punjab / Haryana"></option>
+            <option value="Lucknow Transport Nagar, Uttar Pradesh"></option>
+            <option value="Kanpur Panki Freight Terminal, Uttar Pradesh"></option>
+            <option value="Visakhapatnam Port Freight Zone, Andhra Pradesh"></option>
+            <option value="Vijayawada Auto Nagar Industrial Hub, Andhra Pradesh"></option>
+            <option value="Patna Transport Nagar, Bihar"></option>
+            <option value="Guwahati Inland Container Depot, Assam"></option>
+            <option value="Ludhiana Focal Point Industrial Zone, Punjab"></option>
+            <option value="Vadodara GIDC Industrial Estate, Gujarat"></option>
+            <option value="Coimbatore Sidco Industrial Park, Tamil Nadu"></option>
+            <option value="Nashik Satpur Industrial Area, Maharashtra"></option>
+            <option value="Raipur Urla Industrial Area, Chhattisgarh"></option>
+          </datalist>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="form-group" style="position: relative;">
+              <label class="form-label" data-i18n="label_pickup">Pickup Location (Origin)</label>
+              <input type="text" id="c-origin" class="form-control" list="location-suggestions" autocomplete="off"
+                placeholder="e.g. Bhiwandi Logistics Hub, Mumbai" required
+                oninput="handleLocationInput(event, 'origin'); calcAutoDistance();"
+                onfocus="handleLocationInput(event, 'origin')"
+                onchange="calcAutoDistance()" />
+              <div id="origin-suggestions-box" class="autocomplete-suggestions-box"></div>
+            </div>
+            <div class="form-group" style="position: relative;">
+              <label class="form-label" data-i18n="label_drop">Drop Location (Destination)</label>
+              <input type="text" id="c-dest" class="form-control" list="location-suggestions" autocomplete="off"
+                placeholder="e.g. Okhla Industrial Area, New Delhi" required
+                oninput="handleLocationInput(event, 'dest'); calcAutoDistance();"
+                onfocus="handleLocationInput(event, 'dest')"
+                onchange="calcAutoDistance()" />
+              <div id="dest-suggestions-box" class="autocomplete-suggestions-box"></div>
+            </div>
+          </div>
+
+          <!-- Auto Distance & Calculated Price Banner -->
+          <div
+            style="background: var(--bg-surface-elevated); border: 1px solid var(--border-emerald); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">AUTO ESTIMATED ROUTE DISTANCE:</span>
+              <div class="mono" style="font-size: 1.15rem; font-weight: 700; color: var(--emerald-light);"
+                id="display-calc-distance">~ 1,420 KM</div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">RECOMMENDED ESCROW PRICE:</span>
+              <div class="mono" style="font-size: 1.15rem; font-weight: 700; color: var(--amber-light);"
+                id="display-calc-price">₹ 42,600</div>
+            </div>
+          </div>
+
+          <!-- Goods Type & Custom Commodity -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="form-group">
+              <label class="form-label" data-i18n="label_goods_type">Good Type / Commodity</label>
+              <select id="c-commodity" class="form-control" onchange="handleCommodityChange()">
+                <option value="Electronics & IT">Electronics & IT Hardware</option>
+                <option value="Heavy Machinery">Heavy Industrial Machinery</option>
+                <option value="FMCG & Groceries">FMCG & Packaged Foods</option>
+                <option value="Agriculture & Grains">Agriculture Produce & Grains</option>
+                <option value="Pharmaceuticals">Pharmaceuticals & Vaccines</option>
+                <option value="Chemicals & Fertilizers">Chemicals & Industrial Liquids</option>
+                <option value="Textiles & Garments">Textiles & Garments</option>
+                <option value="Automotive Parts">Automotive Parts & Components</option>
+                <option value="Construction & Steel">Construction, Cement & Steel</option>
+                <option value="Others">Others (Custom Input)</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="custom-commodity-group" style="display: none;">
+              <label class="form-label">Custom Commodity Description</label>
+              <input type="text" id="c-custom-commodity" class="form-control"
+                placeholder="Specify custom good type..." />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" data-i18n="label_vehicle_type">Required Vehicle Type</label>
+              <select id="c-vehicle" class="form-control" onchange="calcAutoDistance()">
+                <option value="Pickup Truck">Pickup Truck (1.5 Ton)</option>
+                <option value="Tata Ace">Tata Ace / Chhota Hathi (1 Ton)</option>
+                <option value="Eicher 14ft">Eicher 14ft (4 Ton)</option>
+                <option value="Eicher 17ft">Eicher 17ft (7 Ton)</option>
+                <option value="Eicher 19ft">Eicher 19ft (9 Ton)</option>
+                <option value="20ft Multi-Axle">20ft Multi-Axle (12 Ton)</option>
+                <option value="22ft High-Deck">22ft High-Deck (15 Ton)</option>
+                <option value="32ft Multi-Axle Container" selected>32ft Multi-Axle Container (20 Ton)</option>
+                <option value="40ft High Cube Container">40ft High Cube Container (28 Ton)</option>
+                <option value="Heavy Tanker">Heavy Tanker (Liquid)</option>
+                <option value="Flatbed Trailer">Flatbed Trailer (25 Ton)</option>
+                <option value="ODC Trailer">ODC (Over Dimensional Cargo)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Weight & Package Dimensions -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+            <div class="form-group">
+              <label class="form-label" data-i18n="label_weight">Total Weight (KG)</label>
+              <input type="number" id="c-weight" class="form-control" placeholder="e.g. 12500" required oninput="calcAutoDistance()" onchange="calcAutoDistance()" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Packages / Pallets</label>
+              <input type="number" id="c-packages" class="form-control" placeholder="e.g. 48" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Dimensions (L×W×H)</label>
+              <input type="text" id="c-dimensions" class="form-control" placeholder="20 x 8 x 8.5" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Units</label>
+              <select id="c-dim-unit" class="form-control">
+                <option value="FT">Feet (ft)</option>
+                <option value="M">Meters (m)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Date & Time Slot -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="form-group">
+              <label class="form-label">Pickup Date</label>
+              <input type="date" id="c-date" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pickup Time Slot</label>
+              <select id="c-timeslot" class="form-control">
+                <option value="Morning (08:00 - 12:00)">Morning (08:00 - 12:00 IST)</option>
+                <option value="Afternoon (12:00 - 16:00)">Afternoon (12:00 - 16:00 IST)</option>
+                <option value="Evening (16:00 - 20:00)">Evening (16:00 - 20:00 IST)</option>
+                <option value="Night (20:00 - 04:00)">Night (20:00 - 04:00 IST)</option>
+                <option value="Immediate 24x7">Immediate Priority 24x7</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Special Cargo Handling Flags (Checkboxes) -->
+          <div
+            style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; margin-bottom: 12px;">
+            <div style="font-weight: 700; font-size: 0.85rem; margin-bottom: 8px; color: var(--text-secondary);">SPECIAL
+              CARGO HANDLING REQUIREMENTS:</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px;">
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer;">
+                <input type="checkbox" id="c-fragile" /> 📦 Fragile
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer;">
+                <input type="checkbox" id="c-hazmat" /> ⚠️ Hazardous
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer;">
+                <input type="checkbox" id="c-temp" onchange="toggleTempInput()" /> ❄️ Temp Control
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer;">
+                <input type="checkbox" id="c-stackable" checked /> 🗄️ Stackable
+              </label>
+            </div>
+            <div id="temp-target-box"
+              style="display: none; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-subtle);">
+              <label class="form-label" style="font-size: 0.8rem;">Target Temperature (°C)</label>
+              <input type="number" id="c-target-temp" class="form-control" style="max-width: 160px;"
+                placeholder="e.g. -18" />
+            </div>
+          </div>
+
+          <!-- Contact Details + Autofill Checkbox -->
+          <div
+            style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-weight: 700; font-size: 0.85rem; color: var(--text-secondary);">DISPATCH SITE CONTACT
+                PERSON:</span>
+              <label
+                style="font-size: 0.8rem; color: var(--emerald-light); cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                <input type="checkbox" id="c-autofill-contact" onchange="handleAutofillContact()" /> Autofill My Profile
+                Details
+              </label>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <input type="text" id="c-contact-name" class="form-control" placeholder="Contact Person Name" required />
+              <input type="text" id="c-contact-phone" class="form-control" placeholder="Contact Phone Number (+91)"
+                required />
+            </div>
+          </div>
+
+          <!-- Invoice & 5 Cargo Photos Upload -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="form-group">
+              <label class="form-label">E-Way Bill / Commercial Invoice (PDF/Img)</label>
+              <input type="file" id="c-invoice-file" class="form-control" accept="image/*,application/pdf" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cargo & Challan Photos (Max 5)</label>
+              <input type="file" id="c-docs-files" class="form-control" accept="image/*" multiple
+                onchange="handleDocsUpload(event)" />
+            </div>
+          </div>
+          <div class="docs-preview-grid" id="docs-preview-grid"></div>
+
+          <!-- Driver Notes & Special Instructions -->
+          <div class="form-group" style="margin-top: 12px;">
+            <label class="form-label">Driver Instructions & Special Transit Notes</label>
+            <textarea id="c-notes" class="form-control" rows="2"
+              placeholder="e.g. Enter through Gate 4, tarp coverage mandatory, check seal before departure..."></textarea>
+          </div>
+
+          <!-- Escrow Offer Price -->
+          <div class="form-group" style="margin-top: 12px;">
+            <label class="form-label" data-i18n="label_freight_price">Escrow Freight Offer Amount (₹ INR)</label>
+            <input type="number" id="c-price" class="form-control" placeholder="e.g. 42000" required />
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeConsignmentModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-load" data-i18n="btn_post_load">Post
+            Consignment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Transporter Delivery Settlement & Driver Rating Modal -->
+  <div class="modal-backdrop" id="transporter-settle-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="card-title">
+          <span>⭐</span> Review POD & Rate Driver
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="closeSettleModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <div style="font-size: 2rem; margin-bottom: 4px;">🚚 ✅</div>
+          <h3 style="color: var(--emerald-light);" id="settle-order-title">Consignment Delivered</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem;" id="settle-order-route">Route</p>
+        </div>
+
+        <!-- POD Image Preview -->
+        <div class="pod-box">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">DRIVER
+            UPLOADED PROOF OF DELIVERY (POD):</div>
+          <img id="settle-pod-img" class="pod-img-preview" src="" alt="Proof of Delivery Challan"
+            onclick="window.open(this.src, '_blank')" />
+        </div>
+
+        <!-- Rating Box -->
+        <div style="margin-top: 1.25rem; text-align: center;">
+          <label class="form-label" style="font-weight: 700;">Rate Driver's Performance:</label>
+          <div class="star-rating-box" id="driver-stars" style="justify-content: center;">
+            <span class="star-item" data-val="1" onclick="setDriverStarRating(1)">★</span>
+            <span class="star-item" data-val="2" onclick="setDriverStarRating(2)">★</span>
+            <span class="star-item" data-val="3" onclick="setDriverStarRating(3)">★</span>
+            <span class="star-item" data-val="4" onclick="setDriverStarRating(4)">★</span>
+            <span class="star-item active" data-val="5" onclick="setDriverStarRating(5)">★</span>
+          </div>
+          <textarea id="driver-review-text" class="form-control" rows="2"
+            placeholder="Leave quick feedback for the driver (e.g. punctual, safe driving, polite)..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeSettleModal()">Review Later</button>
+        <button type="button" class="btn btn-primary" id="btn-confirm-settlement" onclick="submitDriverRatingAndPay()">
+          💳 Release Escrow & Submit Rating
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom App Dock for Shipper/Transporter -->
+  <nav class="driver-mobile-bottom-nav">
+    <button class="driver-mob-nav-btn active" id="mob-dash-btn" onclick="switchMainTab('dashboard')">
+      <span class="driver-mob-nav-icon">📊</span>
+      <span>Fleet</span>
+    </button>
+    <button class="driver-mob-nav-btn" onclick="openConsignmentModal()">
+      <span class="driver-mob-nav-icon">➕</span>
+      <span>Post Load</span>
+    </button>
+    <button class="driver-mob-nav-btn" id="mob-logs-btn" onclick="switchMainTab('logs')">
+      <span class="driver-mob-nav-icon">📜</span>
+      <span>Audit</span>
+    </button>
+    <a href="/profile.html" class="driver-mob-nav-btn">
+      <span class="driver-mob-nav-icon">👤</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+  <script src="/js/i18n.js?v=5.0"></script>
+  <script src="/js/audio-alerts.js?v=5.0"></script>
+  <script src="/js/api.js?v=5.0"></script>
+  <script>
+    let allOrders = [];
+    let radarMap = null;
+    let mapMarkers = [];
+    let mapPolylines = [];
+    let uploadedDocs = [];
+    let currentRatingOrderId = null;
+    let selectedDriverRating = 5;
+    let userProfile = null;
+    let currentMainTab = 'dashboard';
+
+    function switchMainTab(tab) {
+      currentMainTab = tab;
+      const dBtn = document.getElementById('side-dashboard-btn');
+      const lBtn = document.getElementById('side-logs-btn');
+      const mDBtn = document.getElementById('mob-dash-btn');
+      const mLBtn = document.getElementById('mob-logs-btn');
+      const dView = document.getElementById('view-dashboard');
+      const lView = document.getElementById('view-logs');
+
+      if (tab === 'dashboard') {
+        if (dBtn) dBtn.classList.add('active');
+        if (lBtn) lBtn.classList.remove('active');
+        if (mDBtn) mDBtn.classList.add('active');
+        if (mLBtn) mLBtn.classList.remove('active');
+        dView.style.display = 'block';
+        lView.style.display = 'none';
+        if (radarMap) setTimeout(() => radarMap.invalidateSize(), 200);
+      } else {
+        if (lBtn) lBtn.classList.add('active');
+        if (dBtn) dBtn.classList.remove('active');
+        if (mLBtn) mLBtn.classList.add('active');
+        if (mDBtn) mDBtn.classList.remove('active');
+        dView.style.display = 'none';
+        lView.style.display = 'block';
+        loadActivityLogs();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openConsignmentModal() {
+      document.getElementById('consignment-modal').classList.add('show');
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('c-date').value = today;
+    }
+
+    function closeConsignmentModal() {
+      document.getElementById('consignment-modal').classList.remove('show');
+    }
+
+    function handleCommodityChange() {
+      const val = document.getElementById('c-commodity').value;
+      const group = document.getElementById('custom-commodity-group');
+      group.style.display = val === 'Others' ? 'block' : 'none';
+    }
+
+    function toggleTempInput() {
+      const isChecked = document.getElementById('c-temp').checked;
+      document.getElementById('temp-target-box').style.display = isChecked ? 'block' : 'none';
+    }
+
+    function handleAutofillContact() {
+      const isChecked = document.getElementById('c-autofill-contact').checked;
+      if (isChecked && userProfile) {
+        document.getElementById('c-contact-name').value = userProfile.name || '';
+        document.getElementById('c-contact-phone').value = userProfile.phone || '';
+      }
+    }
+
+    function handleDocsUpload(e) {
+      const files = Array.from(e.target.files).slice(0, 5);
+      uploadedDocs = [];
+      const grid = document.getElementById('docs-preview-grid');
+      grid.innerHTML = '';
+
+      files.forEach((file, idx) => {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          uploadedDocs.push(evt.target.result);
+          const thumb = document.createElement('div');
+          thumb.className = 'doc-thumb-item';
+          thumb.innerHTML = `
+            <img src="${evt.target.result}" class="doc-thumb-img" />
+            <button type="button" class="doc-thumb-remove" onclick="removeDocThumb(${idx})">✕</button>
+          `;
+          grid.appendChild(thumb);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function removeDocThumb(idx) {
+      uploadedDocs.splice(idx, 1);
+      const grid = document.getElementById('docs-preview-grid');
+      grid.children[idx]?.remove();
+    }
+
+    function calcAutoDistance() {
+      const o = document.getElementById('c-origin').value;
+      const d = document.getElementById('c-dest').value;
+      if (o && d) {
+        const randDist = Math.floor(Math.random() * 800) + 450;
+        const estPrice = randDist * 32;
+        document.getElementById('display-calc-distance').textContent = `~ ${randDist} KM`;
+        document.getElementById('display-calc-price').textContent = `₹ ${estPrice.toLocaleString('en-IN')}`;
+        if (!document.getElementById('c-price').value) {
+          document.getElementById('c-price').value = estPrice;
+        }
+      }
+    }
+
+    function setDriverStarRating(val) {
+      selectedDriverRating = val;
+      document.querySelectorAll('#driver-stars .star-item').forEach(star => {
+        const sVal = parseInt(star.getAttribute('data-val'));
+        if (sVal <= val) star.classList.add('active');
+        else star.classList.remove('active');
+      });
+    }
+
+    function openSettleModal(orderId) {
+      const order = allOrders.find(o => o.id === orderId);
+      if (!order) return;
+      currentRatingOrderId = orderId;
+      document.getElementById('settle-order-title').textContent = `Consignment #${order.id} Delivered`;
+      document.getElementById('settle-order-route').textContent = `${order.pickupLocation} → ${order.dropLocation}`;
+      document.getElementById('settle-pod-img').src = order.podImageUrl || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600';
+      setDriverStarRating(5);
+      document.getElementById('transporter-settle-modal').classList.add('show');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('transporter-settle-modal').classList.remove('show');
+    }
+
+    async function submitDriverRatingAndPay() {
+      const btn = document.getElementById('btn-confirm-settlement');
+      try {
+        btn.disabled = true;
+        btn.textContent = 'Processing Settlement...';
+
+        await api.rateDriver(currentRatingOrderId, {
+          rating: selectedDriverRating,
+          review: document.getElementById('driver-review-text').value
+        });
+
+        AudioAlerts.playChime('success');
+        AudioAlerts.showNotification('Escrow Released', 'Driver payment verified and performance rating recorded!', 'success');
+        closeSettleModal();
+        await loadDashboard();
+      } catch (err) {
+        showToast(err.message || 'Error processing rating', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💳 Release Escrow & Submit Rating';
+      }
+    }
+
+    function renderOrdersTable() {
+      try {
+        const searchInput = document.getElementById('order-search');
+        const query = searchInput ? searchInput.value.toLowerCase() : '';
+        const tbody = document.getElementById('orders-tbody');
+        if (!tbody) return;
+
+        const filtered = allOrders.filter(o => {
+          const text = `${o.id} ${o.pickupLocation || ''} ${o.dropLocation || ''} ${o.goodsType || ''} ${o.status || ''}`.toLowerCase();
+          return text.includes(query);
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">No matching freight consignments found.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(o => {
+          const mapsUrl = I18n.getGoogleMapsUrl(o.pickupLocation, o.dropLocation);
+          let statusBadge = '';
+          let actionBtn = '';
+
+          if (o.status === 'POSTED' || o.status === 'PENDING') {
+            statusBadge = `<span class="badge badge-posted"><span class="badge-dot"></span> <span data-i18n="status_posted">POSTED</span></span>`;
+            actionBtn = `<button class="btn btn-danger btn-sm" onclick="cancelConsignment(${o.id})" style="padding: 4px 8px; font-size: 0.75rem; font-weight: 700;">❌ Cancel</button>`;
+          } else if (o.status === 'IN_TRANSIT' || o.status === 'ACCEPTED') {
+            statusBadge = `<span class="badge badge-transit"><span class="badge-dot"></span> <span data-i18n="status_in_transit">IN TRANSIT</span></span>`;
+            actionBtn = `<span style="font-size:0.8rem; color:var(--emerald-light); font-weight:700;">🚚 Active</span>`;
+          } else if (o.status === 'COMPLETED' || o.status === 'DELIVERED') {
+            statusBadge = `<span class="badge badge-completed"><span class="badge-dot"></span> <span data-i18n="status_completed">DELIVERED</span></span>`;
+            if (!o.driverRating) {
+              actionBtn = `<button class="btn btn-primary btn-sm" onclick="openSettleModal(${o.id})" style="font-weight: 700;">⭐ Review & Pay</button>`;
+            } else {
+              actionBtn = `<span style="font-size:0.8rem; color:var(--emerald-light); font-weight:700;">✓ Settled</span>`;
+            }
+          } else {
+            statusBadge = `<span class="badge badge-cancelled"><span class="badge-dot"></span> CANCELLED</span>`;
+            actionBtn = `<span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">Cancelled</span>`;
+          }
+
+
+
+          const weight = o.weight ? `${o.weight} KG` : '--';
+          const goods = escapeHtml(o.goodsDescription || o.goodsType || 'General Freight');
+          const driverName = o.driver ? escapeHtml(o.driver.name) : '<span style="color:var(--text-muted);">Unassigned</span>';
+          const fareDisplay = (o.price || o.amount || o.fare || 0).toLocaleString('en-IN');
+
+          return `
+            <tr>
+              <td class="mono" style="font-weight:700; color:var(--text-muted);">#CON-${o.id}</td>
+              <td>
+                <div style="font-weight:700; color:var(--text-primary);">${escapeHtml(o.pickupLocation) || '--'}</div>
+<div style="font-size:0.8rem; color:var(--emerald-light);">↓ ${escapeHtml(o.dropLocation) || '--'}</div>
+              </td>
+              <td>
+                <div style="font-weight:600;">${goods}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">${weight} • ${o.vehicleType || 'Standard Truck'}</div>
+              </td>
+              <td><b>${driverName}</b></td>
+              <td class="mono" style="font-weight:700; color:var(--emerald-light);">₹${fareDisplay}</td>
+              <td>${statusBadge}</td>
+              <td>
+                <div style="display:flex; gap:6px; align-items:center;">
+                  ${actionBtn}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        I18n.applyTranslations();
+      } catch (tableErr) {
+        console.error('Table render error:', tableErr);
+      }
+    }
+
+    async function triggerTransporterRefresh() {
+      try {
+        allOrders = await api.getTransporterOrders();
+        renderOrdersTable();
+        initRadarMap();
+        if (typeof showToast !== 'undefined') showToast('✓ Updated live driver telematics and radar locations', 'info');
+      } catch (e) {
+        console.error('Radar refresh error:', e);
+      }
+    }
+
+    async function cancelConsignment(orderId) {
+      if (!confirm("Are you sure you want to cancel this consignment? This action cannot be undone.")) return;
+      try {
+        const reason = prompt("Please enter the reason for cancellation:") || "Cancelled by Shipper";
+        await api.cancelOrder(orderId, reason);
+        if (typeof showToast !== 'undefined') showToast("✓ Consignment cancelled successfully", "success");
+        await loadDashboard();
+      } catch (err) {
+        if (typeof showToast !== 'undefined') showToast(err.message || "Failed to cancel order", "error");
+      }
+    }
+
+    function resolveOrderCoords(locationStr, existingLat, existingLng, defaultLat, defaultLng) {
+      if (existingLat && existingLng && !isNaN(existingLat) && !isNaN(existingLng) && existingLat !== 0) {
+        return [parseFloat(existingLat), parseFloat(existingLng)];
+      }
+      if (locationStr && typeof CITY_GEO_DB !== 'undefined') {
+        const lower = locationStr.toLowerCase();
+        for (const [key, coords] of Object.entries(CITY_GEO_DB)) {
+          if (lower.includes(key)) return coords;
+        }
+      }
+      return [defaultLat, defaultLng];
+    }
+
+    function initRadarMap() {
+      try {
+        if (typeof L === 'undefined') return;
+        const container = document.getElementById('radar-map');
+        if (!container) return;
+
+        if (!radarMap) {
+          radarMap = L.map('radar-map', {
+            zoomControl: true,
+            scrollWheelZoom: false
+          }).setView([21.7679, 78.8718], 5);
+
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+          }).addTo(radarMap);
+        }
+
+        radarMap.invalidateSize();
+        setTimeout(() => { if (radarMap) radarMap.invalidateSize(); }, 150);
+        setTimeout(() => { if (radarMap) radarMap.invalidateSize(); }, 500);
+
+        mapMarkers.forEach(m => { try { radarMap.removeLayer(m); } catch (e) { } });
+        mapPolylines.forEach(p => { try { radarMap.removeLayer(p); } catch (e) { } });
+        mapMarkers = [];
+        mapPolylines = [];
+
+        const bounds = [];
+        const streamEvents = [];
+        const ROUTE_COLORS = ['#10B981', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#EF4444', '#14B8A6'];
+
+        if (Array.isArray(allOrders) && allOrders.length > 0) {
+          allOrders.forEach((o, idx) => {
+            const routeColor = ROUTE_COLORS[idx % ROUTE_COLORS.length];
+            const isMoving = o.status === 'IN_TRANSIT' || o.status === 'ACCEPTED';
+            const driverName = o.driver ? o.driver.name : 'Unassigned';
+
+            // Resolve pickup & drop coordinates with fallbacks
+            const [pLat, pLng] = resolveOrderCoords(o.pickupLocation, o.pickupLat, o.pickupLng, 19.0760, 72.8777);
+            const [dLat, dLng] = resolveOrderCoords(o.dropLocation, o.dropLat, o.dropLng, 28.6139, 77.2090);
+            const [cLat, cLng] = resolveOrderCoords(o.pickupLocation, o.currentLat, o.currentLng, pLat, pLng);
+
+            // 1. Point A: Pickup Marker (Origin)
+            const pickupIcon = L.divIcon({
+              html: `<div style="font-size: 20px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); color:${routeColor};">📍</div>`,
+              className: 'map-custom-pickup-icon',
+              iconSize: [24, 24],
+              iconAnchor: [12, 12]
+            });
+            const pMarker = L.marker([pLat, pLng], { icon: pickupIcon })
+              .addTo(radarMap)
+              .bindPopup(`<b>Pickup Site (Point A): #CON-${o.id}</b><br/>${escapeHtml(o.pickupLocation || 'Origin Hub')}`);
+            mapMarkers.push(pMarker);
+            bounds.push([pLat, pLng]);
+
+            // 2. Point B: Drop Marker (Destination)
+            const dropIcon = L.divIcon({
+              html: `<div style="font-size: 20px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); color:${routeColor};">🏁</div>`,
+              className: 'map-custom-drop-icon',
+              iconSize: [24, 24],
+              iconAnchor: [12, 12]
+            });
+            const dMarker = L.marker([dLat, dLng], { icon: dropIcon })
+              .addTo(radarMap)
+              .bindPopup(`<b>Destination Site (Point B): #CON-${o.id}</b><br/>${escapeHtml(o.dropLocation || 'Destination Hub')}`);
+            mapMarkers.push(dMarker);
+            bounds.push([dLat, dLng]);
+
+            // 3. Driver Truck Marker with Live Name Badge Tooltip
+            const truckIcon = L.divIcon({
+              html: `<div style="font-size: 24px; filter: drop-shadow(0 2px 6px ${routeColor}); transform: scale(1.1);">🚚</div>`,
+              className: 'map-custom-truck-icon',
+              iconSize: [28, 28],
+              iconAnchor: [14, 14]
+            });
+
+            const truckMarker = L.marker([cLat, cLng], { icon: truckIcon })
+              .addTo(radarMap)
+              .bindPopup(`
+                <div style="font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; color:#000; padding:4px;">
+                  <b style="color:${routeColor};">🚚 #CON-${o.id}</b><br/>
+                  <b>Driver:</b> ${escapeHtml(driverName)}<br/>
+                  <b>Status:</b> ${o.status}<br/>
+                  <b>Vehicle:</b> ${o.vehicleType || 'Truck'}<br/>
+                  <b>Route:</b> ${escapeHtml(o.pickupLocation || '')} → ${escapeHtml(o.dropLocation || '')}
+                </div>
+              `);
+
+            // Permanent Tooltip displaying Driver Name directly above Truck symbol on Map
+            truckMarker.bindTooltip(`<span style="border-left: 3px solid ${routeColor}; padding-left: 4px; font-weight:700;">🚚 ${escapeHtml(driverName)} (#CON-${o.id})</span>`, {
+              permanent: true,
+              direction: 'top',
+              offset: [0, -12],
+              className: 'driver-truck-map-tooltip'
+            });
+
+            mapMarkers.push(truckMarker);
+            bounds.push([cLat, cLng]);
+
+            // 4. Distinct Colored Route Lines: Point A -> Driver Truck -> Point B
+            const polyPassed = L.polyline([[pLat, pLng], [cLat, cLng]], {
+              color: routeColor,
+              weight: 4,
+              opacity: 0.95
+            }).addTo(radarMap);
+            mapPolylines.push(polyPassed);
+
+            const polyRemaining = L.polyline([[cLat, cLng], [dLat, dLng]], {
+              color: routeColor,
+              dashArray: '6, 8',
+              weight: 3,
+              opacity: 0.7
+            }).addTo(radarMap);
+            mapPolylines.push(polyRemaining);
+
+            // Build Telematics Stream Cards for Right Panel
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            streamEvents.push(`
+              <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 10px; font-size: 0.82rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                  <span class="mono" style="font-weight:700; color:${routeColor};">#CON-${o.id}</span>
+                  <span style="font-size:0.75rem; color:var(--text-muted);">${timeStr}</span>
+                </div>
+                <div style="font-weight:700; color:var(--text-primary); margin-bottom:2px;">
+                  🚚 ${escapeHtml(driverName)}
+                </div>
+                <div style="color:var(--text-muted); font-size:0.78rem;">
+                  📍 ${escapeHtml(o.pickupLocation || 'Origin')} → 🏁 ${escapeHtml(o.dropLocation || 'Destination')}
+                </div>
+                <div style="margin-top:6px; display:flex; gap:6px; align-items:center;">
+                  <span class="badge ${isMoving ? 'badge-transit' : 'badge-posted'}" style="font-size:0.68rem; padding:1px 6px;">
+                    ${o.status}
+                  </span>
+                  <span style="font-size:0.72rem; color:var(--emerald-light);">✓ GPS Active</span>
+                </div>
+              </div>
+            `);
+          });
+        }
+
+        // Populate Live Pilot Stream
+        const streamContainer = document.getElementById('live-pilot-stream');
+        if (streamContainer) {
+          if (streamEvents.length > 0) {
+            streamContainer.innerHTML = streamEvents.join('');
+          } else {
+            streamContainer.innerHTML = `
+              <div style="text-align: center; color: var(--text-muted); padding: 2rem 0; font-size: 0.85rem;">
+                🚚 No active freight dispatches on radar.<br/><br/>
+                <button class="btn btn-primary btn-sm" onclick="openConsignmentModal()">+ Post New Consignment</button>
+              </div>
+            `;
+          }
+        }
+
+        if (bounds.length > 0) {
+          radarMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
+        }
+      } catch (mapErr) {
+        console.warn('Radar map init warning:', mapErr);
+      }
+    }
+
+    async function loadDashboard() {
+      try {
+        const me = await api.getMe();
+        if (!me || !me.authenticated || !me.user) {
+          window.location.href = '/login.html';
+          return;
+        }
+        if (me.user.role === 'DRIVER') {
+          window.location.href = '/driver.html';
+          return;
+        }
+        if (me.user.role === 'ADMIN') {
+          window.location.href = '/admin.html';
+          return;
+        }
+
+        userProfile = me.user;
+        const nameEl = document.getElementById('nav-username');
+        if (nameEl) nameEl.textContent = userProfile.name;
+        const avatarEl = document.getElementById('nav-avatar');
+        if (avatarEl) avatarEl.textContent = userProfile.name.charAt(0).toUpperCase();
+        const ratingEl = document.getElementById('nav-user-rating');
+        const rating = userProfile.shipperRating || 5.0;
+        if (ratingEl) ratingEl.textContent = `⭐ ${rating.toFixed(1)} (Shipper Trust)`;
+
+        try {
+          allOrders = await api.getTransporterOrders();
+        } catch (apiErr) {
+          console.warn('Failed to load orders from API, fallback to empty array', apiErr);
+          allOrders = [];
+        }
+        if (!Array.isArray(allOrders)) allOrders = [];
+
+        const active = allOrders.filter(o => o.status === 'IN_TRANSIT' || o.status === 'ACCEPTED').length;
+        const pending = allOrders.filter(o => o.status === 'PENDING' || o.status === 'POSTED').length;
+        const completed = allOrders.filter(o => o.status === 'COMPLETED' || o.status === 'DELIVERED').length;
+        const totalSpend = allOrders.reduce((sum, o) => sum + (o.price || o.amount || o.fare || 0), 0);
+
+        const actEl = document.getElementById('kpi-active-count');
+        if (actEl) actEl.textContent = active;
+        const pendEl = document.getElementById('kpi-pending-count');
+        if (pendEl) pendEl.textContent = pending;
+        const compEl = document.getElementById('kpi-completed-count');
+        if (compEl) compEl.textContent = completed;
+        const spendEl = document.getElementById('kpi-spend-val');
+        if (spendEl) spendEl.textContent = `₹${totalSpend.toLocaleString('en-IN')}`;
+
+        renderOrdersTable();
+        initRadarMap();
+      } catch (err) {
+        console.error('Transporter dashboard load error:', err);
+      }
+    }
+
+    async function handlePostConsignment(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-load');
+      const commodity = document.getElementById('c-commodity').value === 'Others'
+        ? document.getElementById('c-custom-commodity').value
+        : document.getElementById('c-commodity').value;
+
+      const formData = new FormData();
+      const originInput = document.getElementById('c-origin');
+      const destInput = document.getElementById('c-dest');
+
+      formData.append('pickupLocation', originInput.value);
+      formData.append('dropLocation', destInput.value);
+
+      if (originInput.dataset.lat) {
+        formData.append('pickupLat', originInput.dataset.lat);
+        formData.append('pickupLng', originInput.dataset.lng);
+      }
+      if (destInput.dataset.lat) {
+        formData.append('dropLat', destInput.dataset.lat);
+        formData.append('dropLng', destInput.dataset.lng);
+      }
+
+      formData.append('goodsType', commodity);
+      formData.append('goodsDescription', document.getElementById('c-notes').value || commodity);
+      
+      const weightVal = document.getElementById('c-weight').value;
+      if (weightVal && !isNaN(weightVal)) formData.append('weight', parseFloat(weightVal));
+      
+      const priceVal = document.getElementById('c-price').value;
+      if (priceVal && !isNaN(priceVal)) formData.append('amount', parseFloat(priceVal));
+
+      formData.append('vehicleType', document.getElementById('c-vehicle').value);
+      formData.append('contactPersonName', document.getElementById('c-contact-name').value);
+      formData.append('contactPersonPhone', document.getElementById('c-contact-phone').value);
+      formData.append('pickupDate', document.getElementById('c-date').value);
+      formData.append('pickupTimeSlot', document.getElementById('c-timeslot').value);
+
+      // Robust L x W x H dimension parser
+      const dimStr = document.getElementById('c-dimensions').value || '';
+      let dimL = null, dimW = null, dimH = null;
+      if (dimStr.includes('x')) {
+        const parts = dimStr.split('x');
+        if (parts[0]) dimL = parseFloat(parts[0].trim());
+        if (parts[1]) dimW = parseFloat(parts[1].trim());
+        if (parts[2]) dimH = parseFloat(parts[2].trim());
+      } else if (dimStr.includes('×')) {
+        const parts = dimStr.split('×');
+        if (parts[0]) dimL = parseFloat(parts[0].trim());
+        if (parts[1]) dimW = parseFloat(parts[1].trim());
+        if (parts[2]) dimH = parseFloat(parts[2].trim());
+      } else if (dimStr.trim() !== '') {
+        dimL = parseFloat(dimStr.trim());
+      }
+
+      if (dimL && !isNaN(dimL)) formData.append('dimensionLength', dimL);
+      if (dimW && !isNaN(dimW)) formData.append('dimensionWidth', dimW);
+      if (dimH && !isNaN(dimH)) formData.append('dimensionHeight', dimH);
+
+      formData.append('dimensionUnit', document.getElementById('c-dim-unit').value);
+      const pkgVal = document.getElementById('c-packages').value;
+      if (pkgVal && !isNaN(pkgVal)) formData.append('packageCount', parseInt(pkgVal));
+      else formData.append('packageCount', 1);
+
+      formData.append('isFragile', document.getElementById('c-fragile').checked);
+      formData.append('isHazardous', document.getElementById('c-hazmat').checked);
+      formData.append('isTempControlled', document.getElementById('c-temp').checked);
+      
+      const tempVal = document.getElementById('c-target-temp').value;
+      if (tempVal && !isNaN(tempVal)) formData.append('targetTemp', parseFloat(tempVal));
+      
+      formData.append('isStackable', document.getElementById('c-stackable').checked);
+      formData.append('driverNotes', document.getElementById('c-notes').value);
+
+      if (uploadedDocs.length > 0) {
+        formData.append('docUrls', uploadedDocs.join('|||'));
+      }
+
+      try {
+        btn.disabled = true;
+        btn.textContent = 'Posting Consignment...';
+        await api.createOrder(formData);
+        AudioAlerts.playChime('success');
+        AudioAlerts.showNotification('Consignment Published', 'Load posted to national freight exchange!', 'success');
+        closeConsignmentModal();
+        document.getElementById('consignment-form').reset();
+        uploadedDocs = [];
+        document.getElementById('docs-preview-grid').innerHTML = '';
+        await loadDashboard();
+      } catch (err) {
+        showToast(err.message || 'Error posting consignment', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Post Consignment';
+      }
+    }
+
+    async function loadActivityLogs() {
+      const tbody = document.getElementById('shipper-logs-tbody');
+      try {
+        const logs = await api.getTransporterLogs();
+        if (!logs || logs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">No activity logs recorded yet.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = logs.map(l => {
+          const time = l.timestamp ? new Date(l.timestamp).toLocaleString() : 'Just now';
+          return `
+            <tr>
+              <td class="mono" style="font-size: 0.8rem; color: var(--text-secondary);">${time}</td>
+              <td><span class="audit-badge order">${l.action}</span></td>
+              <td class="mono" style="color: var(--emerald-light); font-weight:700;">#CON-${l.entityId || 0}</td>
+              <td style="font-size: 0.85rem; color: var(--text-secondary);">${l.details || ''}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--coral-primary);">Could not load logs</td></tr>`;
+      }
+    }
+
+    async function triggerTransporterRefresh() {
+      const btn = document.getElementById('btn-global-refresh');
+      if (btn) btn.classList.add('spinning');
+      try {
+        await loadDashboard();
+        if (currentMainTab === 'logs') {
+          await loadActivityLogs();
+        }
+        showToast('Dashboard & telematics updated', 'info');
+      } catch (e) {
+        showToast('Error refreshing data', 'error');
+      } finally {
+        setTimeout(() => {
+          if (btn) btn.classList.remove('spinning');
+        }, 600);
+      }
+    }
+
+    // =========================================================================
+    // LOCATION AUTOCOMPLETE & ACCURATE HIGHWAY DISTANCE CALCULATOR
+    // =========================================================================
+    const CITY_GEO_DB = {
+      'mumbai': [19.0760, 72.8777],
+      'bhiwandi': [19.2812, 73.0482],
+      'thane': [19.2183, 72.9781],
+      'navi mumbai': [19.0330, 73.0297],
+      'jnpt': [18.9500, 72.9500],
+      'pune': [18.5204, 73.8567],
+      'chakan': [18.7606, 73.8617],
+      'delhi': [28.6139, 77.2090],
+      'new delhi': [28.6139, 77.2090],
+      'okhla': [28.5355, 77.2639],
+      'nehru place': [28.5494, 77.2517],
+      'gurugram': [28.4595, 77.0266],
+      'gurgaon': [28.4595, 77.0266],
+      'noida': [28.5355, 77.3910],
+      'faridabad': [28.4089, 77.3178],
+      'bengaluru': [12.9716, 77.5946],
+      'bangalore': [12.9716, 77.5946],
+      'whitefield': [12.9698, 77.7500],
+      'peenya': [13.0324, 77.5218],
+      'hyderabad': [17.3850, 78.4867],
+      'patancheru': [17.5332, 78.2657],
+      'chennai': [13.0827, 80.2707],
+      'sriperumbudur': [12.9702, 79.9430],
+      'surat': [21.1702, 72.8311],
+      'ahmedabad': [23.0225, 72.5714],
+      'sanand': [23.0003, 72.3831],
+      'kolkata': [22.5726, 88.3639],
+      'bhubaneswar': [20.2961, 85.8245],
+      'cuttack': [20.4625, 85.8828],
+      'paradeep': [20.3164, 86.6114],
+      'nagpur': [21.1458, 79.0882],
+      'indore': [22.7196, 75.8577],
+      'pithampur': [22.6074, 75.6811],
+      'jaipur': [26.9124, 75.7873],
+      'chandigarh': [30.7333, 76.7794],
+      'lucknow': [26.8467, 80.9462],
+      'kanpur': [26.4499, 80.3319],
+      'visakhapatnam': [17.6868, 83.2185],
+      'vijayawada': [16.5062, 80.6480],
+      'patna': [25.5941, 85.1376],
+      'guwahati': [26.1445, 91.7362],
+      'ludhiana': [30.9010, 75.8573],
+      'vadodara': [22.3072, 73.1812],
+      'coimbatore': [11.0168, 76.9558],
+      'nashik': [19.9975, 73.7898],
+      'raipur': [21.2514, 81.6296]
+    };
+
+    const PRESET_SUGGESTIONS = [
+      "Mumbai Port Terminal, Mumbai, Maharashtra",
+      "Bhiwandi Logistics Hub, Thane, Maharashtra",
+      "JNPT Port, Navi Mumbai, Maharashtra",
+      "Pune Auto Cluster, Chakan, Maharashtra",
+      "Nehru Place Logistics Yard, New Delhi, Delhi",
+      "Okhla Industrial Area, New Delhi, Delhi",
+      "Gurugram Cyber Hub Freight Zone, Haryana",
+      "Noida Industrial Sector 62, Uttar Pradesh",
+      "Whitefield EPIP Logistics Zone, Bengaluru, Karnataka",
+      "Peenya Industrial Area, Bengaluru, Karnataka",
+      "Genome Valley Cold Chain, Hyderabad, Telangana",
+      "Patancheru Industrial Park, Hyderabad, Telangana",
+      "Chennai Harbor Freight Terminal, Chennai, Tamil Nadu",
+      "Sriperumbudur Industrial Hub, Chennai, Tamil Nadu",
+      "Surat Textile Market Hub, Surat, Gujarat",
+      "Sanand Industrial Estate, Ahmedabad, Gujarat",
+      "Kolkata Port Trust Yard, Kolkata, West Bengal",
+      "Bhubaneswar AIIMS Logistics Depot, Bhubaneswar, Odisha",
+      "Cuttack Malgodown Wholesale Hub, Cuttack, Odisha",
+      "Paradeep Port Freight Gate, Jagatsinghpur, Odisha",
+      "Nagpur Butibori Multi-Modal Cargo Hub, Maharashtra",
+      "Indore Pithampur Industrial Corridor, Madhya Pradesh",
+      "Jaipur Sitapura Industrial Area, Rajasthan",
+      "Chandigarh Freight Terminal, Punjab / Haryana",
+      "Lucknow Transport Nagar, Uttar Pradesh",
+      "Kanpur Panki Freight Terminal, Uttar Pradesh"
+    ];
+
+    let locationSearchDebounce = null;
+
+    async function handleLocationInput(e, type) {
+      const input = e.target;
+      const box = document.getElementById(`${type}-suggestions-box`);
+      if (!box) return;
+
+      const val = input.value.trim().toLowerCase();
+      let matches = [];
+
+      // 1. Filter local presets
+      if (val.length > 0) {
+        matches = PRESET_SUGGESTIONS.filter(loc => loc.toLowerCase().includes(val)).slice(0, 6);
+      } else {
+        matches = PRESET_SUGGESTIONS.slice(0, 6);
+      }
+
+      // 2. Query backend API
+      try {
+        if (val.length >= 2) {
+          const apiRes = await fetch(`/api/locations/suggest?q=${encodeURIComponent(val)}`).then(r => r.json()).catch(() => []);
+          if (Array.isArray(apiRes)) {
+            for (const item of apiRes) {
+              if (!matches.includes(item)) matches.push(item);
+            }
+          }
+        }
+      } catch (err) {}
+
+      // 3. Render immediate matches
+      renderSuggestionsDropdown(box, type, matches);
+
+      // 4. If search query length >= 2, perform live global OpenStreetMap Nominatim search for ALL locations
+      if (val.length >= 2) {
+        clearTimeout(locationSearchDebounce);
+        locationSearchDebounce = setTimeout(async () => {
+          try {
+            const nomUrl = `https://nominatim.openstreetmap.org/search?format=json&countrycodes=in&addressdetails=1&limit=6&q=${encodeURIComponent(val)}`;
+            const res = await fetch(nomUrl, { signal: AbortSignal.timeout(2500) });
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+              const liveObjects = data.map(item => ({
+                display_name: item.display_name,
+                lat: item.lat,
+                lng: item.lon
+              }));
+              const combined = [...matches];
+              for (const obj of liveObjects) {
+                if (!combined.some(c => (typeof c === 'string' ? c : c.display_name) === obj.display_name)) {
+                  combined.push(obj);
+                }
+              }
+              renderSuggestionsDropdown(box, type, combined.slice(0, 10));
+            }
+          } catch (e) {}
+        }, 300);
+      }
+    }
+
+    function renderSuggestionsDropdown(box, type, items) {
+      if (!items || items.length === 0) {
+        box.style.display = 'none';
+        return;
+      }
+      box.innerHTML = items.map(item => {
+        const text = typeof item === 'string' ? item : item.display_name;
+        const lat = typeof item === 'object' && item.lat ? item.lat : '';
+        const lng = typeof item === 'object' && (item.lng || item.lon) ? (item.lng || item.lon) : '';
+        const escapedText = text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        return `
+          <div class="suggestion-item" onclick="selectLocationSuggestion('${type}', '${escapedText}', '${lat}', '${lng}')">
+            📍 <span style="line-height:1.2;">${escapeHtml(text)}</span>
+          </div>
+        `;
+      }).join('');
+      box.style.display = 'block';
+    }
+
+    function selectLocationSuggestion(type, value, lat, lng) {
+      const inputId = type === 'origin' ? 'c-origin' : 'c-dest';
+      const input = document.getElementById(inputId);
+      if (input) {
+        input.value = value;
+        if (lat && lng) {
+          input.dataset.lat = lat;
+          input.dataset.lng = lng;
+        } else {
+          delete input.dataset.lat;
+          delete input.dataset.lng;
+        }
+      }
+      const box = document.getElementById(`${type}-suggestions-box`);
+      if (box) box.style.display = 'none';
+      calcAutoDistance();
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.form-group')) {
+        const b1 = document.getElementById('origin-suggestions-box');
+        const b2 = document.getElementById('dest-suggestions-box');
+        if (b1) b1.style.display = 'none';
+        if (b2) b2.style.display = 'none';
+      }
+    });
+
+    let distanceCalcTimer = null;
+
+    function getCoordsFromLocalDb(str) {
+      if (!str) return null;
+      const s = str.toLowerCase();
+      for (const [key, coords] of Object.entries(CITY_GEO_DB)) {
+        if (s.includes(key)) return { lat: coords[0], lng: coords[1] };
+      }
+      return null;
+    }
+
+    async function geocodeAddress(inputOrStr) {
+      let address = '';
+      let cachedLat = null;
+      let cachedLng = null;
+
+      if (typeof inputOrStr === 'string') {
+        address = inputOrStr.trim();
+      } else if (inputOrStr && inputOrStr.value) {
+        address = inputOrStr.value.trim();
+        if (inputOrStr.dataset.lat && inputOrStr.dataset.lng) {
+          cachedLat = parseFloat(inputOrStr.dataset.lat);
+          cachedLng = parseFloat(inputOrStr.dataset.lng);
+        }
+      }
+
+      if (cachedLat && cachedLng) {
+        return { lat: cachedLat, lng: cachedLng };
+      }
+
+      if (!address) return null;
+
+      const local = getCoordsFromLocalDb(address);
+      if (local) return local;
+
+      // Progressive query strategy for high accuracy fallback
+      const parts = address.split(',').map(s => s.trim()).filter(s => s.length > 0);
+      const searchQueries = [address];
+
+      if (parts.length > 1) {
+        // Strip zipcodes and generic logistics terms
+        const cleanParts = parts
+          .map(p => p.replace(/\b(logistics|hub|yard|terminal|freight|zone|cluster|estate|industrial|park|depot|\d{6})\b/gi, '').trim())
+          .filter(p => p.length > 0);
+        if (cleanParts.length > 0) searchQueries.push(cleanParts.join(', '));
+
+        if (parts.length >= 3) {
+          searchQueries.push(`${parts[0]}, ${parts[parts.length - 2]}, ${parts[parts.length - 1]}`);
+        }
+        searchQueries.push(`${parts[0]}, India`);
+        searchQueries.push(parts[0]);
+      }
+
+      const uniqueQueries = [...new Set(searchQueries)];
+
+      for (const qStr of uniqueQueries) {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=in&limit=1&q=${encodeURIComponent(qStr)}`, { signal: AbortSignal.timeout(2000) });
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+          }
+        } catch (e) {}
+      }
+
+      return null;
+    }
+
+    function calculateHaversineKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    async function fetchRealRouteDistance(originEl, destEl) {
+      const originCoords = await geocodeAddress(originEl);
+      const destCoords = await geocodeAddress(destEl);
+
+      if (!originCoords || !destCoords) {
+        throw new Error('Could not geocode route locations');
+      }
+
+      try {
+        const url = `https://router.project-osrm.org/route/v1/driving/${originCoords.lng},${originCoords.lat};${destCoords.lng},${destCoords.lat}?overview=false`;
+        const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
+        const data = await res.json();
+        if (data && data.routes && data.routes.length > 0) {
+          const roadKm = data.routes[0].distance / 1000.0;
+          return { distanceKm: Math.round(roadKm * 10) / 10, isExactRoad: true };
+        }
+      } catch (err) {}
+
+      const directKm = calculateHaversineKm(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng);
+      const estimatedRoadKm = directKm * 1.27;
+      return { distanceKm: Math.round(estimatedRoadKm * 10) / 10, isExactRoad: false };
+    }
+
+    function calculateAccuratePrice(km, weightKg, vehicleType) {
+      let baseRatePerKm = 26.0;
+      const v = (vehicleType || '').toLowerCase();
+      if (v.includes('40ft') || v.includes('odc')) baseRatePerKm = 42.0;
+      else if (v.includes('32ft')) baseRatePerKm = 34.0;
+      else if (v.includes('eicher')) baseRatePerKm = 22.0;
+      else if (v.includes('tata') || v.includes('pickup')) baseRatePerKm = 16.0;
+
+      const baseFare = 2800.0;
+      const distanceFare = km * baseRatePerKm;
+      const weightFare = (weightKg / 1000.0) * 850.0;
+
+      const total = Math.round(baseFare + distanceFare + weightFare);
+      return Math.max(2500, Math.round(total / 100) * 100);
+    }
+
+    async function calcAutoDistance() {
+      const originInput = document.getElementById('c-origin');
+      const destInput = document.getElementById('c-dest');
+      const origin = originInput?.value?.trim();
+      const dest = destInput?.value?.trim();
+      const distEl = document.getElementById('display-calc-distance');
+      const priceEl = document.getElementById('display-calc-price');
+
+      if (!origin || !dest) {
+        if (distEl) distEl.innerHTML = `<span style="color:var(--text-muted); font-weight:normal;">Select origin & destination</span>`;
+        if (priceEl) priceEl.textContent = '₹ 0';
+        return;
+      }
+
+      if (distEl) distEl.innerHTML = `<span style="font-size:0.9rem; color:var(--amber-light);">⚡ Computing real highway distance...</span>`;
+
+      clearTimeout(distanceCalcTimer);
+      distanceCalcTimer = setTimeout(async () => {
+        try {
+          const res = await fetchRealRouteDistance(originInput, destInput);
+          const km = Math.round(res.distanceKm);
+          const weight = parseFloat(document.getElementById('c-weight')?.value) || 10000;
+          const vehicle = document.getElementById('c-vehicle')?.value || 'Standard Truck';
+
+          const estPrice = calculateAccuratePrice(km, weight, vehicle);
+
+          if (distEl) {
+            distEl.innerHTML = `📍 <b>${km.toLocaleString('en-IN')} KM</b> <span style="font-size:0.75rem; font-weight:normal; color:var(--emerald-light); margin-left:6px;">${res.isExactRoad ? '✓ Highway Route' : '✓ Direct Route Est.'}</span>`;
+          }
+          if (priceEl) {
+            priceEl.textContent = `₹ ${estPrice.toLocaleString('en-IN')}`;
+          }
+
+          const priceInput = document.getElementById('c-price');
+          if (priceInput && (!priceInput.value || priceInput.dataset.autoManaged === 'true')) {
+            priceInput.value = estPrice;
+            priceInput.dataset.autoManaged = 'true';
+          }
+        } catch (err) {
+          if (distEl) distEl.innerHTML = `<span style="color:var(--coral-primary); font-size:0.85rem;">Location not found</span>`;
+        }
+      }, 350);
+    }
+
+    window.addEventListener('DOMContentLoaded', loadDashboard);
+  </script>
+</body>
+
+</html>
