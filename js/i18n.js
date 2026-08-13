@@ -335,6 +335,12 @@ const I18n = {
     this.currentLang = lang;
     localStorage.setItem('apex_lang', lang);
     this.applyTranslations();
+    
+    // Re-render the toggles visually
+    document.querySelectorAll('.navbar-lang-container').forEach(container => {
+      container.innerHTML = this.renderNavbarToggle();
+    });
+
     document.dispatchEvent(new CustomEvent('apex:langchange', { detail: { lang } }));
   },
 
