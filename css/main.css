@@ -1810,12 +1810,11 @@ select.form-control option {
     justify-content: center !important;
     width: 38px !important;
     height: 38px !important;
-    min-width: 38px !important;
     background: var(--bg-surface-elevated) !important;
     border: 1px solid var(--border-subtle) !important;
-    border-radius: var(--radius-md) !important;
+    border-radius: 0 !important;
     color: var(--text-primary) !important;
-    font-size: 1.25rem !important;
+    font-size: 1.2rem !important;
     cursor: pointer !important;
   }
 
@@ -1834,7 +1833,7 @@ select.form-control option {
     height: 36px !important;
     min-width: 36px !important;
     padding: 0 !important;
-    border-radius: var(--radius-md) !important;
+    border-radius: 0 !important;
     font-size: 0.95rem !important;
   }
 
@@ -1848,16 +1847,26 @@ select.form-control option {
     font-size: 0.75rem !important;
   }
 
+  .topbar .user-name,
+  .topbar .user-role-badge {
+    display: none !important;
+  }
+
   .topbar .user-chip {
-    padding: 3px 6px !important;
+    padding: 0 !important;
+    width: 36px !important;
     height: 36px !important;
-    gap: 6px !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: none !important;
+    gap: 0 !important;
   }
 
   .topbar .user-avatar {
-    width: 26px !important;
-    height: 26px !important;
-    font-size: 0.72rem !important;
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.95rem !important;
+    border-radius: 0 !important;
   }
 
   .topbar .live-clock-widget {

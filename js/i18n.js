@@ -397,16 +397,19 @@ const I18n = {
 
   renderNavbarToggle() {
     const isHinglish = this.currentLang === 'hinglish';
-    return `
-      <div class="apex-lang-toggle-wrap" title="Switch language / Bhasha badlein">
-        <button type="button" class="apex-lang-toggle-btn ${!isHinglish ? 'active' : ''}" data-lang="en" onclick="I18n.setLang('en')">
-          EN
-        </button>
-        <button type="button" class="apex-lang-toggle-btn ${isHinglish ? 'active' : ''}" data-lang="hinglish" onclick="I18n.setLang('hinglish')">
+    if (isHinglish) {
+      return `
+        <button type="button" class="btn-icon-square" style="font-weight: 700; border-radius: 0; background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary);" onclick="I18n.setLang('en')" title="Switch to English">
           HI
         </button>
-      </div>
-    `;
+      `;
+    } else {
+      return `
+        <button type="button" class="btn-icon-square" style="font-weight: 700; border-radius: 0; background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary);" onclick="I18n.setLang('hinglish')" title="Switch to Hinglish">
+          EN
+        </button>
+      `;
+    }
   },
 
   getGoogleMapsUrl(pickup, drop, pLat, pLng, dLat, dLng) {
