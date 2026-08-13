@@ -2,384 +2,897 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>Apex Transport | High-Precision Autonomous Freight Network</title>
-  <link rel="stylesheet" href="/css/main.css?v=5.0" />
-  <script src="/js/theme.js?v=5.0"></script>
+  <title>Apex Transport | Next-Gen Autonomous Freight Network</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* Hero & Landing Styles */
-    .landing-hero {
-      text-align: center;
-      padding: 5rem 1.5rem 3rem;
-      max-width: 960px;
-      margin: 0 auto;
-      position: relative;
+    /* CSS Reset & Strict No-Scroll Core */
+    *, *::before, *::after {
+      box-sizing: border-box !important;
+      margin: 0;
+      padding: 0;
     }
-    .landing-badge {
+
+    html, body {
+      width: 100% !important;
+      height: 100% !important;
+      overflow: hidden !important;
+      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      background-color: #06090e !important;
+      color: #ffffff !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .apx-viewport {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      overflow: hidden !important;
+      background-color: #06090e;
+    }
+
+    /* -------------------------------------------------------------------------
+       EXACT USER-PROVIDED PNG CINEMATIC BACKGROUND IMAGE (new_bg.png)
+       ------------------------------------------------------------------------- */
+    .apx-slices-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden;
+      background-image: url('/images/new_bg.png');
+      background-size: cover;
+      background-position: center center;
+    }
+
+    /* Subtle Overlay for optimal text legibility */
+    .apx-dark-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 4;
+      background: linear-gradient(90deg, 
+        rgba(0, 0, 0, 0.45) 0%, 
+        rgba(0, 0, 0, 0.2) 42%, 
+        rgba(0, 0, 0, 0.05) 70%, 
+        rgba(0, 0, 0, 0.25) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* -------------------------------------------------------------------------
+       MAIN GRID LAYOUT: LEFT SIDE HERO + RIGHT SIDE FLOATING CARD
+       ------------------------------------------------------------------------- */
+    .apx-main-grid {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      overflow: hidden !important;
+    }
+
+    /* Left Side Content Column (Occupies ~60% width) */
+    .apx-hero-col {
+      width: 58%;
+      padding: 2.5rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+    .apx-hero-top {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Dark Glassmorphism Pill Badge */
+    .apx-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 16px;
-      border-radius: var(--radius-full);
-      background: var(--emerald-subtle);
-      border: 1px solid var(--border-emerald);
-      color: var(--emerald-light);
-      font-size: 0.85rem;
+      padding: 5px 13px;
+      border-radius: 9999px;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+      color: #ffffff;
+      width: fit-content;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
     }
-    .hero-main-title {
-      font-family: 'Boldonse', 'Syne', sans-serif !important;
-      font-size: clamp(3rem, 7vw, 5rem);
+
+    .apx-badge .bolt {
+      color: #00A86B;
+      font-size: 0.82rem;
+    }
+
+    /* Main Headline */
+    .apx-hero-h1 {
+      font-size: clamp(2.4rem, 3.5vw, 3.4rem);
       font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-      margin-bottom: 1.25rem;
-      color: var(--text-primary);
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      color: #ffffff;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
     }
-    [data-theme="dark"] .hero-main-title {
-      background: linear-gradient(135deg, #ffffff 40%, #a7f3d0 80%, #34d399 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 40px rgba(16, 185, 129, 0.25);
+
+    .apx-hero-h1 .green-span {
+      color: #00A86B;
+      display: block;
     }
-    [data-theme="light"] .hero-main-title {
-      background: linear-gradient(135deg, #0f172a 40%, #065f46 80%, #059669 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+
+    /* Subheading */
+    .apx-hero-sub {
+      font-size: 0.96rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+      font-weight: 500;
+      max-width: 500px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
     }
-    .hero-subtitle {
-      font-size: clamp(1.05rem, 2vw, 1.25rem);
-      color: var(--text-secondary);
-      max-width: 680px;
-      margin: 0 auto 2.5rem;
-      line-height: 1.6;
+
+    /* 4 Feature Items Stack */
+    .apx-features-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      margin-top: 0.3rem;
     }
-    .hero-cta-group {
+
+    .apx-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Dark Circular Container & Green SVG Icon */
+    .apx-feature-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(0, 168, 107, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .btn-hero-primary {
-      background: var(--emerald-primary);
-      color: #090C10;
-      font-weight: 700;
-      font-size: 1.05rem;
-      padding: 14px 32px;
-      border-radius: var(--radius-full);
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.25s ease;
-      box-shadow: 0 0 25px var(--emerald-glow);
-      text-decoration: none;
-    }
-    .btn-hero-primary:hover {
-      background: var(--emerald-light);
-      transform: translateY(-2px);
-      box-shadow: 0 0 35px rgba(16, 185, 129, 0.5);
-    }
-    .btn-hero-secondary {
-      background: var(--bg-surface-elevated);
-      color: var(--text-primary);
-      font-weight: 600;
-      font-size: 1.05rem;
-      padding: 14px 30px;
-      border-radius: var(--radius-full);
-      border: 1px solid var(--border-prominent);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.25s ease;
-      text-decoration: none;
-    }
-    .btn-hero-secondary:hover {
-      background: var(--bg-surface-hover);
-      border-color: var(--amber-light);
-      color: var(--amber-light);
-      transform: translateY(-2px);
+      flex-shrink: 0;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
 
-    /* Auth Card Section */
-    .auth-section {
-      max-width: 520px;
-      margin: 2rem auto 5rem;
-      padding: 0 1.5rem;
+    .apx-feature-icon-box svg {
+      width: 18px;
+      height: 18px;
+      color: #00A86B;
     }
-    .auth-card {
-      background: var(--bg-glass);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid var(--border-prominent);
-      border-radius: var(--radius-xl);
-      padding: 2.5rem;
-      box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 0, 0, 0.7);
+
+    .apx-feature-info h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 1px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .apx-feature-info p {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      line-height: 1.3;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Left Copyright */
+    .apx-hero-copyright {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
+    }
+
+    /* -------------------------------------------------------------------------
+       FLOATING WHITE LOGIN CARD (STRICT WHITE MODE ONLY, NO SCROLL)
+       ------------------------------------------------------------------------- */
+    .apx-card-col {
+      position: absolute;
+      right: 3.5%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36%;
+      min-width: 360px;
+      max-width: 440px;
+      z-index: 20;
+    }
+
+    .apx-login-card {
+      background: #ffffff !important;
+      border-radius: 24px !important;
+      padding: 1.6rem 2rem !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 10px 15px -3px rgba(0, 0, 0, 0.2) !important;
+      width: 100% !important;
+      color: #0f172a !important;
+      position: relative !important;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      overflow: hidden !important; /* Strict No Scrollbar */
+    }
+
+    /* Top-Right Language Toggle Selector Pill INSIDE Card (No Theme Switcher) */
+    .apx-lang-pill {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.4rem;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 9999px;
+      padding: 3px 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #334155;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .apx-lang-pill select {
+      background: transparent;
+      border: none;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #0f172a;
+      outline: none;
+      cursor: pointer;
+      padding-right: 2px;
+      font-family: inherit;
+    }
+
+    /* Brand Header Box */
+    .apx-brand-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-top: 0.2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .apx-brand-square {
+      width: 44px;
+      height: 44px;
+      background: #00A86B;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      margin-bottom: 0.4rem;
+      box-shadow: 0 6px 16px rgba(0, 168, 107, 0.28);
+    }
+
+    .apx-brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .apx-brand-tag {
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: #00A86B;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .apx-heading {
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 0.1rem;
+    }
+
+    .apx-subtext {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 2px;
+      margin-bottom: 0.85rem;
+    }
+
+    /* Form Fields */
+    .apx-field {
+      margin-bottom: 0.75rem;
+    }
+
+    .apx-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 4px;
+    }
+
+    .apx-input-wrap {
       position: relative;
     }
 
-    /* How It Works Showcase */
-    .how-it-works-section {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 5rem 1.5rem 6rem;
-      border-top: 1px solid var(--border-subtle);
+    .apx-input-wrap input, .apx-input-wrap select {
+      width: 100%;
+      padding: 9px 12px 9px 2.3rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      font-family: inherit;
+      color: #0f172a;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.2s;
+      background: #f8fafc;
     }
-    .section-header {
-      text-align: center;
-      margin-bottom: 3.5rem;
+
+    .apx-input-wrap input:focus, .apx-input-wrap select:focus {
+      background: #ffffff;
+      border-color: #00A86B;
+      box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.15);
     }
-    .section-header h2 {
-      font-size: 2.4rem;
-      margin-bottom: 0.75rem;
-    }
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 2rem;
-    }
-    .feature-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 2rem 1.75rem;
-      transition: all 0.25s ease;
-      display: flex;
-      flex-direction: column;
-    }
-    .feature-card:hover {
-      background: var(--bg-surface-elevated);
-      border-color: var(--border-emerald);
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
-    }
-    .feature-icon-box {
-      width: 54px;
-      height: 54px;
-      border-radius: var(--radius-md);
+
+    .apx-icon-left {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      margin-bottom: 1.5rem;
+      pointer-events: none;
     }
-    .icon-box-emerald { background: var(--emerald-subtle); border: 1px solid var(--border-emerald); color: var(--emerald-light); }
-    .icon-box-amber { background: var(--amber-subtle); border: 1px solid var(--border-amber); color: var(--amber-light); }
-    .icon-box-cyan { background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); color: #38bdf8; }
-    .icon-box-purple { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; }
 
-    .feature-card h3 {
-      font-size: 1.25rem;
-      margin-bottom: 0.75rem;
-      color: var(--text-primary);
+    .apx-icon-right {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
     }
-    .feature-card p {
-      font-size: 0.92rem;
-      color: var(--text-secondary);
-      line-height: 1.55;
+
+    .apx-options-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+      font-size: 0.75rem;
+    }
+
+    .apx-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #64748b;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .apx-checkbox-label input {
+      accent-color: #00A86B;
+      cursor: pointer;
+      width: 14px;
+      height: 14px;
+    }
+
+    .apx-link-green {
+      color: #00A86B;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .apx-link-green:hover {
+      text-decoration: underline;
+    }
+
+    .apx-btn-submit {
+      width: 100%;
+      background: #00A86B !important;
+      color: #ffffff !important;
+      border: none !important;
+      border-radius: 10px !important;
+      padding: 10px 14px !important;
+      font-size: 0.88rem !important;
+      font-weight: 700 !important;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(0, 168, 107, 0.28);
+    }
+
+    .apx-btn-submit:hover {
+      background: #00965E !important;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0, 168, 107, 0.38);
+    }
+
+    .apx-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 0.75rem 0;
+      color: #94a3b8;
+      font-size: 0.72rem;
+    }
+
+    .apx-divider::before, .apx-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .apx-divider span {
+      padding: 0 8px;
+    }
+
+    /* Single Social Row (Google Button Only) */
+    .apx-social-row {
+      display: flex;
+      margin-bottom: 0.75rem;
+    }
+
+    .apx-btn-social {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 9px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .apx-btn-social:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    .apx-footer-auth {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #64748b;
+      margin-top: 0.2rem;
+    }
+
+    .apx-footer-auth a {
+      color: #00A86B;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .apx-footer-auth a:hover {
+      text-decoration: underline;
+    }
+
+    /* Toast notification overrides */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .toast-success { background: #00A86B; }
+    .toast-error { background: #ef4444; }
+
+    /* Responsive adjustment */
+    @media (max-width: 1100px) {
+      .apx-hero-col {
+        width: 55%;
+        padding: 2rem;
+      }
+      .apx-card-col {
+        width: 40%;
+      }
+    }
+
+    @media (max-width: 850px) {
+      .apx-viewport {
+        overflow-y: auto !important;
+      }
+      .apx-main-grid {
+        flex-direction: column;
+        height: auto;
+      }
+      .apx-hero-col {
+        width: 100%;
+        padding: 2rem;
+      }
+      .apx-card-col {
+        position: relative;
+        left: auto;
+        top: auto;
+        right: auto;
+        transform: none;
+        width: 90%;
+        max-width: 420px;
+        margin: 1.5rem auto;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="ambient-bg"></div>
+  <div class="apx-viewport">
+    
+    <!-- User-Provided PNG Cinematic Background Image (new_bg.png) -->
+    <div class="apx-slices-wrapper"></div>
+    <div class="apx-dark-overlay"></div>
 
-  <div class="app-wrapper">
-    <!-- Topbar Navigation -->
-    <header class="topbar">
-      <a href="/" class="brand">
-        <div class="brand-icon">🚛</div>
-        <div>
-          <div class="brand-name brand-apex">Apex Transport</div>
-          <div class="brand-tag mono" data-i18n="brand_tagline">Next-Gen Autonomous Freight Network</div>
+    <!-- Main Content Layout -->
+    <div class="apx-main-grid">
+      
+      <!-- Left Hero Column (58% width) -->
+      <div class="apx-hero-col">
+        <div class="apx-hero-top">
+          <!-- Glassmorphism Pill Badge -->
+          <div class="apx-badge">
+            <span class="bolt">⚡</span> AI POWERED &nbsp;•&nbsp; SMART LOGISTICS
+          </div>
+          
+          <!-- Headline -->
+          <h1 class="apx-hero-h1">
+            Moving India.
+            <span class="green-span">Powering Progress.</span>
+          </h1>
+          
+          <!-- Subheading -->
+          <p class="apx-hero-sub" data-i18n="hero_subtitle">
+            AI-orchestrated freight network delivering intelligence, efficiency and trust.
+          </p>
+          
+          <!-- 4 Feature Items with dark circular containers & green SVG icons -->
+          <div class="apx-features-stack">
+            <!-- Feature 1: AI Logistics Telematics -->
+            <div class="apx-feature-item">
+              <div class="apx-feature-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                  <rect x="9" y="9" width="6" height="6"></rect>
+                  <line x1="9" y1="1" x2="9" y2="4"></line>
+                  <line x1="15" y1="1" x2="15" y2="4"></line>
+                  <line x1="9" y1="20" x2="9" y2="23"></line>
+                  <line x1="15" y1="20" x2="15" y2="23"></line>
+                  <line x1="20" y1="9" x2="23" y2="9"></line>
+                  <line x1="20" y1="15" x2="23" y2="15"></line>
+                  <line x1="1" y1="9" x2="4" y2="9"></line>
+                  <line x1="1" y1="15" x2="4" y2="15"></line>
+                </svg>
+              </div>
+              <div class="apx-feature-info">
+                <h4>AI Logistics Telematics</h4>
+                <p>Real-time insights &amp; predictive freight intelligence</p>
+              </div>
+            </div>
+            
+            <!-- Feature 2: Secure & Compliant -->
+            <div class="apx-feature-item">
+              <div class="apx-feature-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <polyline points="9 12 11 14 15 10"></polyline>
+                </svg>
+              </div>
+              <div class="apx-feature-info">
+                <h4>Secure &amp; Compliant</h4>
+                <p>Enterprise-grade security with end-to-end encryption</p>
+              </div>
+            </div>
+
+            <!-- Feature 3: Faster Deliveries -->
+            <div class="apx-feature-item">
+              <div class="apx-feature-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+              </div>
+              <div class="apx-feature-info">
+                <h4>Faster Deliveries</h4>
+                <p>Optimized routes, smarter dispatch, greater reliability</p>
+              </div>
+            </div>
+
+            <!-- Feature 4: Nationwide Network -->
+            <div class="apx-feature-item">
+              <div class="apx-feature-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+              </div>
+              <div class="apx-feature-info">
+                <h4>Nationwide Network</h4>
+                <p>Strong, scalable &amp; autonomous freight infrastructure</p>
+              </div>
+            </div>
+          </div>
         </div>
-      </a>
 
-      <!-- Navbar Actions (Theme Toggle & Hinglish/English Toggle) -->
-      <div class="topbar-actions">
-        <button class="btn-theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
-          ☀️ <span class="theme-label">Day</span>
-        </button>
-        <div class="navbar-lang-container"></div>
-      </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="landing-hero">
-      <div class="landing-badge mono">
-        <span>⚡</span> AI Logistics Telematics
-      </div>
-      <h1 class="hero-main-title brand-apex" data-i18n="hero_title">Apex Transport</h1>
-      <p class="hero-subtitle" data-i18n="hero_subtitle">
-        Enterprise AI-orchestrated intercity freight & cold-chain telematics network. High-throughput dispatch, Google Maps real-time navigation, and digital proof of delivery.
-      </p>
-
-      <div class="hero-cta-group">
-        <a href="#auth-section" class="btn-hero-primary" onclick="focusAuth('login')">
-          <span data-i18n="btn_get_started">Get Started</span>
-          <span>→</span>
-        </a>
-        <a href="#how-it-works" class="btn-hero-secondary">
-          <span>🔍</span>
-          <span data-i18n="btn_how_it_works">What is Apex Transport?</span>
-        </a>
-      </div>
-    </section>
-
-    <!-- Sign In & Register Card Section -->
-    <section id="auth-section" class="auth-section">
-      <div class="auth-card">
-        <!-- Tab Bar -->
-        <div class="tab-bar" style="width: 100%; margin-bottom: 1.75rem;">
-          <button class="tab-btn active" id="tab-login-btn" onclick="switchAuthTab('login')" style="flex: 1;" data-i18n="tab_sign_in">
-            Sign In
-          </button>
-          <button class="tab-btn" id="tab-register-btn" onclick="switchAuthTab('register')" style="flex: 1;" data-i18n="tab_register">
-            Register Account
-          </button>
+        <!-- Copyright -->
+        <div class="apx-hero-copyright">
+          &copy; 2025 Apex Transport. All rights reserved.
         </div>
+      </div>
 
-        <!-- Login Form -->
-        <form id="login-form" onsubmit="handleManualLogin(event)">
-          <div class="form-group">
-            <label class="form-label" data-i18n="label_email">Official Email Address</label>
-            <input type="email" id="login-email" class="form-control" data-i18n-placeholder="placeholder_email" placeholder="name@company.com" required value="vikram@transporter.com" />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" data-i18n="label_password">Secure Password</label>
-            <input type="password" id="login-password" class="form-control" data-i18n-placeholder="placeholder_password" placeholder="••••••••••••" required value="vikram123" />
-          </div>
-
-          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 1.25rem;" id="login-submit-btn">
-            <span data-i18n="btn_login">Access Workspace</span> →
-          </button>
-        </form>
-
-        <!-- Register Form -->
-        <form id="register-form" onsubmit="handleRegister(event)" style="display: none;">
-          <div class="form-group">
-            <label class="form-label">Full Name</label>
-            <input type="text" id="reg-name" class="form-control" placeholder="e.g. Ramesh Chandra" required />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" data-i18n="label_email">Email Address</label>
-            <input type="email" id="reg-email" class="form-control" placeholder="name@company.com" required />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" data-i18n="label_password">Password</label>
-            <input type="password" id="reg-password" class="form-control" placeholder="Create strong password" required />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Account Role / Portal</label>
-            <select id="reg-role" class="form-control">
-              <option value="TRANSPORTER">🏢 Transporter / Shipper (Post Freight)</option>
-              <option value="DRIVER">🚚 Fleet Truck Driver (Deliver Goods)</option>
+      <!-- Right Column: Floating White Login Card (Strict White Mode Only, No Scroll) -->
+      <div class="apx-card-col">
+        <div class="apx-login-card">
+          
+          <!-- Functional Language Selector Pill INSIDE Card (No Mode Changer) -->
+          <div class="apx-lang-pill" title="Switch Language / Bhasha Badlein">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <select id="apx-lang-select" onchange="changeLanguage(this.value)">
+              <option value="en">English (EN)</option>
+              <option value="hinglish">Hinglish (🇮🇳)</option>
             </select>
           </div>
 
-          <button type="submit" class="btn btn-amber btn-lg" style="width: 100%; margin-top: 1.25rem;" id="reg-submit-btn">
-            <span data-i18n="btn_register_submit">Create Apex Account</span>
-          </button>
-        </form>
+          <!-- Brand Logo Header -->
+          <div class="apx-brand-header">
+            <div class="apx-brand-square">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="15" height="13" rx="2"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+              </svg>
+            </div>
+            <div class="apx-brand-title" data-i18n="brand_name">Apex Transport</div>
+            <div class="apx-brand-tag" data-i18n="brand_tagline">NEXT-GEN AUTONOMOUS FREIGHT NETWORK</div>
+          </div>
+
+          <!-- Card Welcome Heading -->
+          <h2 class="apx-heading" id="apx-card-heading" data-i18n="tab_sign_in">Welcome Back</h2>
+          <p class="apx-subtext" id="apx-card-subtext">Sign in to your workspace</p>
+
+          <!-- Sign In Form -->
+          <form id="login-form" onsubmit="handleManualLogin(event)">
+            <div class="apx-field">
+              <label class="apx-label" for="login-email" data-i18n="label_email">Email Address</label>
+              <div class="apx-input-wrap">
+                <span class="apx-icon-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                </span>
+                <input type="email" id="login-email" placeholder="vikram@apextransport.com" value="vikram@apextransport.com" required data-i18n-placeholder="placeholder_email" />
+              </div>
+            </div>
+
+            <div class="apx-field">
+              <label class="apx-label" for="login-password" data-i18n="label_password">Password</label>
+              <div class="apx-input-wrap">
+                <span class="apx-icon-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </span>
+                <input type="password" id="login-password" placeholder="••••••••" value="vikram123" required data-i18n-placeholder="placeholder_password" />
+                <span class="apx-icon-right" onclick="togglePasswordVisibility('login-password')" title="Toggle password visibility">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <div class="apx-options-row">
+              <label class="apx-checkbox-label">
+                <input type="checkbox" id="remember-me" checked />
+                <span>Remember me</span>
+              </label>
+              <a href="#" class="apx-link-green">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="apx-btn-submit" id="login-submit-btn" data-i18n="btn_login">
+              Sign In to Workspace &rarr;
+            </button>
+
+            <div class="apx-divider">
+              <span>or continue with</span>
+            </div>
+
+            <!-- Single Social Row (Google Button Only, GitHub Removed) -->
+            <div class="apx-social-row">
+              <button type="button" class="apx-btn-social" onclick="fillDemo('vikram@apextransport.com', 'vikram123')">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                Continue with Google
+              </button>
+            </div>
+
+            <div class="apx-footer-auth">
+              New to Apex Transport? <a onclick="switchAuthMode('register')">Create an account</a>
+            </div>
+          </form>
+
+          <!-- Register Form (Hidden initially) -->
+          <form id="register-form" onsubmit="handleRegister(event)" style="display: none;">
+            <div class="apx-field">
+              <label class="apx-label" for="reg-name">Full Name</label>
+              <div class="apx-input-wrap">
+                <span class="apx-icon-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </span>
+                <input type="text" id="reg-name" placeholder="Ramesh Chandra" required />
+              </div>
+            </div>
+
+            <div class="apx-field">
+              <label class="apx-label" for="reg-email" data-i18n="label_email">Email Address</label>
+              <div class="apx-input-wrap">
+                <span class="apx-icon-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                </span>
+                <input type="email" id="reg-email" placeholder="name@company.com" required data-i18n-placeholder="placeholder_email" />
+              </div>
+            </div>
+
+            <div class="apx-field">
+              <label class="apx-label" for="reg-password" data-i18n="label_password">Password</label>
+              <div class="apx-input-wrap">
+                <span class="apx-icon-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </span>
+                <input type="password" id="reg-password" placeholder="Create strong password" required data-i18n-placeholder="placeholder_password" />
+              </div>
+            </div>
+
+            <div class="apx-field">
+              <label class="apx-label" for="reg-role">Account Role</label>
+              <div class="apx-input-wrap">
+                <span class="apx-icon-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                  </svg>
+                </span>
+                <select id="reg-role" required>
+                  <option value="TRANSPORTER" data-i18n="role_transporter">Transporter / Shipper</option>
+                  <option value="DRIVER" data-i18n="role_driver">Fleet Driver</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="apx-btn-submit" id="reg-submit-btn" style="margin-top: 0.8rem;" data-i18n="btn_register_submit">
+              Create Apex Account &rarr;
+            </button>
+
+            <div class="apx-divider">
+              <span>or</span>
+            </div>
+
+            <div class="apx-footer-auth">
+              Already have an account? <a onclick="switchAuthMode('login')">Sign In</a>
+            </div>
+          </form>
+
+        </div>
       </div>
-    </section>
 
-    <!-- What Apex Transport Is / How It Works -->
-    <section id="how-it-works" class="how-it-works-section">
-      <div class="section-header">
-        <span class="badge badge-transit mono" style="margin-bottom: 10px;">OPERATIONAL WORKFLOW</span>
-        <h2 class="brand-apex" data-i18n="how_title">Autonomous Freight Architecture</h2>
-        <p style="color: var(--text-secondary); max-width: 720px; margin: 0 auto;" data-i18n="how_desc">
-          Engineered for maximum payload efficiency, transparent pricing, and sub-second driver dispatch across India.
-        </p>
-      </div>
-
-      <div class="features-grid">
-        <!-- Feature 1 -->
-        <div class="feature-card">
-          <div class="feature-icon-box icon-box-emerald">📦</div>
-          <h3 data-i18n="step1_title">1. Multi-Attribute Load Dispatch</h3>
-          <p data-i18n="step1_desc">
-            Shippers specify cargo volume, cold chain targets, package counts, GST e-way bills, and geo-fenced routes with instantaneous algorithmic pricing.
-          </p>
-        </div>
-
-        <!-- Feature 2 -->
-        <div class="feature-card">
-          <div class="feature-icon-box icon-box-amber">⚡</div>
-          <h3 data-i18n="step2_title">2. High-Priority Driver Match</h3>
-          <p data-i18n="step2_desc">
-            Nearby verified fleet carriers receive instantaneous load alerts and can claim consignments on a strict First-Come, First-Serve basis.
-          </p>
-        </div>
-
-        <!-- Feature 3 -->
-        <div class="feature-card">
-          <div class="feature-icon-box icon-box-cyan">🗺️</div>
-          <h3 data-i18n="step3_title">3. Real-Time Telematics & Navigation</h3>
-          <p data-i18n="step3_desc">
-            One-click handoff to Google Maps with automated origin-destination routing, GPS telemetry tracking, and live route status.
-          </p>
-        </div>
-
-        <!-- Feature 4 -->
-        <div class="feature-card">
-          <div class="feature-icon-box icon-box-purple">🔒</div>
-          <h3 data-i18n="step4_title">4. Digital Proof of Delivery & Rating</h3>
-          <p data-i18n="step4_desc">
-            Mandatory photo POD verification, instant payment clearing, and two-way 5-star performance rating between shippers and drivers.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer style="text-align: center; padding: 2.5rem 1rem; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 0.85rem;">
-      <p class="brand-apex" style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 6px;">Apex Transport Systems &copy; 2026</p>
-      <p>Cybernetic Logistics & Cold-Chain Telematics Platform. All Rights Reserved.</p>
-    </footer>
+    </div>
   </div>
 
-  <script src="/js/i18n.js?v=5.0"></script>
-  <script src="/js/api.js?v=5.0"></script>
+  <script src="/js/api.js?v=6.0"></script>
+  <script src="/js/i18n.js?v=6.0"></script>
   <script>
-    function switchAuthTab(tab) {
+    // Initialize Language Toggle Dropdown state on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const select = document.getElementById('apx-lang-select');
+      if (select && window.I18n) {
+        select.value = I18n.getLang() || 'en';
+        I18n.applyTranslations();
+      }
+    });
+
+    function changeLanguage(lang) {
+      if (window.I18n) {
+        I18n.setLang(lang);
+      }
+    }
+
+    function switchAuthMode(mode) {
       const loginForm = document.getElementById('login-form');
       const regForm = document.getElementById('register-form');
-      const tabLoginBtn = document.getElementById('tab-login-btn');
-      const tabRegBtn = document.getElementById('tab-register-btn');
+      const heading = document.getElementById('apx-card-heading');
+      const subtext = document.getElementById('apx-card-subtext');
 
-      if (tab === 'login') {
+      if (mode === 'login') {
         loginForm.style.display = 'block';
         regForm.style.display = 'none';
-        tabLoginBtn.classList.add('active');
-        tabRegBtn.classList.remove('active');
+        heading.textContent = window.I18n ? I18n.t('tab_sign_in', 'Welcome Back') : 'Welcome Back';
+        subtext.textContent = 'Sign in to your workspace';
       } else {
         loginForm.style.display = 'none';
         regForm.style.display = 'block';
-        tabRegBtn.classList.add('active');
-        tabLoginBtn.classList.remove('active');
+        heading.textContent = window.I18n ? I18n.t('tab_register', 'Create an Account') : 'Create an Account';
+        subtext.textContent = 'Join the next-gen freight network';
       }
-      I18n.applyTranslations();
     }
 
-    function focusAuth(tab) {
-      switchAuthTab(tab);
-      const emailInput = document.getElementById('login-email');
-      if (emailInput) setTimeout(() => emailInput.focus(), 300);
+    function togglePasswordVisibility(id) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') {
+        input.type = 'text';
+      } else {
+        input.type = 'password';
+      }
+    }
+    
+    function fillDemo(email, pass) {
+      switchAuthMode('login');
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = pass;
     }
 
     function redirectRole(role) {
@@ -396,14 +909,14 @@
 
       try {
         btn.disabled = true;
-        btn.innerHTML = `<span>Authenticating...</span>`;
+        btn.innerHTML = `Authenticating...`;
         const res = await api.login(email, password);
-        showToast(I18n.t('login_success'), 'success');
+        showToast(window.I18n ? I18n.t('login_success', 'Login Successful!') : 'Login Successful!', 'success');
         setTimeout(() => redirectRole(res.user.role), 350);
       } catch (err) {
-        showToast(err.message || I18n.t('toast_error'), 'error');
+        showToast(err.message || 'Login failed', 'error');
         btn.disabled = false;
-        btn.innerHTML = `<span data-i18n="btn_login">${I18n.t('btn_login')}</span> →`;
+        btn.innerHTML = window.I18n ? I18n.t('btn_login', 'Sign In to Workspace →') : 'Sign In to Workspace →';
       }
     }
 
@@ -417,14 +930,14 @@
 
       try {
         btn.disabled = true;
-        btn.innerHTML = `<span>Creating Account...</span>`;
+        btn.innerHTML = `Creating Account...`;
         const res = await api.register({ name, email, password, role });
-        showToast(I18n.t('register_success'), 'success');
+        showToast(window.I18n ? I18n.t('register_success', 'Registration Successful!') : 'Registration Successful!', 'success');
         setTimeout(() => redirectRole(res.user.role), 400);
       } catch (err) {
-        showToast(err.message || I18n.t('toast_error'), 'error');
+        showToast(err.message || 'Registration failed', 'error');
         btn.disabled = false;
-        btn.innerHTML = `<span data-i18n="btn_register_submit">${I18n.t('btn_register_submit')}</span>`;
+        btn.innerHTML = window.I18n ? I18n.t('btn_register_submit', 'Create Apex Account →') : 'Create Apex Account →';
       }
     }
   </script>
