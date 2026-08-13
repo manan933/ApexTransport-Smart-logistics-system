@@ -177,11 +177,11 @@
               <div class="map-header">
                 <div class="map-title">
                   <span class="status-indicator"></span>
-                  <span data-i18n="map_radar_title">National Logistics Telematics Radar</span>
+                  <span data-i18n="map_radar_title">Radar</span>
                 </div>
                 <div style="display: flex; gap: 8px;">
                   <button class="btn btn-secondary btn-sm" onclick="triggerTransporterRefresh()" title="Update Live Driver GPS Locations">
-                    🔄 Update Driver Locations
+                    ⟳ Refresh
                   </button>
                 </div>
               </div>
@@ -208,9 +208,7 @@
           <!-- Consignments Roster Table -->
           <div class="card" style="margin-bottom: 2rem;">
             <div class="card-header">
-              <div class="card-title">
-                <span>📦</span> <span data-i18n="tab_active_orders">Enterprise Consignments & Dispatches</span>
-              </div>
+                <span>📋</span> <span data-i18n="tab_active_orders">Consignments</span>
               <input type="text" id="order-search" class="form-control"
                 placeholder="Search loads by city, ID, driver..."
                 style="max-width: 280px; padding: 6px 12px; font-size: 0.85rem;" oninput="renderOrdersTable()" />
@@ -245,9 +243,9 @@
           <div class="card">
             <div class="card-header">
               <div class="card-title">
-                <span>📜</span> <span data-i18n="tab_activity_logs">Shipper Activity & Telematics Log Trail</span>
+                <span>📜</span> <span data-i18n="tab_activity_logs">Activity Logs</span>
               </div>
-              <button class="btn btn-secondary btn-sm" onclick="loadActivityLogs()">⟳ Refresh Logs</button>
+              <button class="btn btn-secondary btn-sm" onclick="loadActivityLogs()">⟳ Refresh</button>
             </div>
             <div class="table-container">
               <table class="table">
@@ -279,7 +277,7 @@
     <div class="modal" style="max-width: 780px;">
       <div class="modal-header">
         <div class="card-title">
-          <span>📦</span> <span data-i18n="btn_post_load">Create Enterprise Consignment</span>
+          <span>📦</span> <span data-i18n="btn_post_load">Create Consignment</span>
         </div>
         <button class="btn btn-secondary btn-sm" onclick="closeConsignmentModal()">✕</button>
       </div>
@@ -523,8 +521,7 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" onclick="closeConsignmentModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="btn-submit-load" data-i18n="btn_post_load">Post
-            Consignment</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-load" data-i18n="btn_post_load">Post</button>
         </div>
       </form>
     </div>
@@ -571,10 +568,8 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="closeSettleModal()">Review Later</button>
-        <button type="button" class="btn btn-primary" id="btn-confirm-settlement" onclick="submitDriverRatingAndPay()">
-          💳 Release Escrow & Submit Rating
-        </button>
+        <button type="button" class="btn btn-secondary" onclick="closeSettleModal()">Later</button>
+        <button type="button" class="btn btn-primary" id="btn-confirm-settlement" onclick="submitDriverRatingAndPay()">Settle</button>
       </div>
     </div>
   </div>
@@ -756,7 +751,7 @@
         showToast(err.message || 'Error processing rating', 'error');
       } finally {
         btn.disabled = false;
-        btn.textContent = '💳 Release Escrow & Submit Rating';
+        btn.textContent = 'Settle';
       }
     }
 
@@ -791,7 +786,7 @@
           } else if (o.status === 'COMPLETED' || o.status === 'DELIVERED') {
             statusBadge = `<span class="badge badge-completed"><span class="badge-dot"></span> <span data-i18n="status_completed">DELIVERED</span></span>`;
             if (!o.driverRating) {
-              actionBtn = `<button class="btn btn-primary btn-sm" onclick="openSettleModal(${o.id})" style="font-weight: 700;">⭐ Review & Pay</button>`;
+              actionBtn = `<button class="btn btn-primary btn-sm" onclick="openSettleModal(${o.id})" style="font-weight: 700;">✅ Review</button>`;
             } else {
               actionBtn = `<span style="font-size:0.8rem; color:var(--emerald-light); font-weight:700;">✓ Settled</span>`;
             }
@@ -1021,7 +1016,7 @@
             streamContainer.innerHTML = `
               <div style="text-align: center; color: var(--text-muted); padding: 2rem 0; font-size: 0.85rem;">
                 🚚 No active freight dispatches on radar.<br/><br/>
-                <button class="btn btn-primary btn-sm" onclick="openConsignmentModal()">+ Post New Consignment</button>
+                <button class="btn btn-primary btn-sm" onclick="openConsignmentModal()">+ Post</button>
               </div>
             `;
           }

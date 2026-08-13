@@ -97,7 +97,7 @@
           <div class="card" style="border-color: var(--border-amber); margin-bottom: 1.5rem;" id="active-job-card">
             <div class="card-header">
               <div class="card-title" style="color: var(--amber-light);">
-                <span>🎯</span> <span data-i18n="tab_active_job">Active Highway Transit Mission</span>
+                <span>🎯</span> <span data-i18n="tab_active_job">Active Job</span>
               </div>
               <div id="job-status-pill"></div>
             </div>
@@ -110,7 +110,7 @@
                 <p style="font-size: 0.9rem; margin-top: 4px;">Explore available freight loads on the exchange to claim
                   your next payload.</p>
                 <button class="btn btn-primary btn-sm" style="margin-top: 1rem;" onclick="switchDriverTab('available')"
-                  data-i18n="tab_available_loads">View Available Loads</button>
+                  data-i18n="tab_available_loads">Loads</button>
               </div>
             </div>
           </div>
@@ -151,10 +151,10 @@
           <div class="card" style="margin-bottom: 1.5rem;">
             <div class="card-header">
               <div class="card-title">
-                <span>📋</span> <span data-i18n="tab_available_loads">National Available Freight Exchange</span>
+                <span>📋</span> <span data-i18n="tab_available_loads">Available Loads</span>
               </div>
               <div style="display: flex; gap: 8px;">
-                <button class="btn btn-secondary btn-sm" onclick="openFleetModal()">🚚 Multi-Truck Fleet Options</button>
+                <button class="btn btn-secondary btn-sm" onclick="openFleetModal()">🚚 Fleet</button>
                 <button class="btn btn-secondary btn-sm" onclick="triggerDriverRefresh()">⟳ Refresh</button>
               </div>
             </div>
@@ -181,9 +181,9 @@
           <div class="card">
             <div class="card-header">
               <div class="card-title">
-                <span>📜</span> <span data-i18n="tab_activity_logs">Pilot Trip & Activity History</span>
+                <span>📜</span> <span data-i18n="tab_activity_logs">Trip History</span>
               </div>
-              <button class="btn btn-secondary btn-sm" onclick="triggerDriverRefresh()">⟳ Refresh History</button>
+              <button class="btn btn-secondary btn-sm" onclick="triggerDriverRefresh()">⟳ Refresh</button>
             </div>
             <div class="table-container">
               <table class="table">
@@ -323,7 +323,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeFleetModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="saveFleetVehicles()">Save Fleet Config</button>
+        <button type="button" class="btn btn-primary" onclick="saveFleetVehicles()">Save</button>
       </div>
     </div>
   </div>
@@ -503,9 +503,9 @@
           container.innerHTML = `
             <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
               <div style="font-size: 2.5rem; margin-bottom: 8px;">🚚 💨</div>
-              <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-primary);" data-i18n="msg_no_active_job">No Active Consignment Assigned</div>
-              <p style="font-size: 0.9rem; margin-top: 4px;">Explore available freight loads on the exchange to claim your next payload.</p>
-              <button class="btn btn-primary btn-sm" style="margin-top: 1rem;" onclick="switchDriverTab('available')" data-i18n="tab_available_loads">View Available Loads</button>
+              <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-primary);" data-i18n="msg_no_active_job">No Active Job</div>
+              <p style="font-size: 0.9rem; margin-top: 4px;">Explore available loads to claim your next job.</p>
+              <button class="btn btn-primary btn-sm" style="margin-top: 1rem;" onclick="switchDriverTab('available')" data-i18n="tab_available_loads">Loads</button>
             </div>
           `;
         }
@@ -566,20 +566,20 @@
               <div class="driver-action-buttons-wrapper" style="display: flex; gap: 10px; margin-top: 1.25rem; flex-wrap: wrap;">
                 <!-- Google Maps Redirect Button -->
                 <a href="${mapsUrl}" target="_blank" class="btn btn-secondary driver-action-btn-mobile" style="color: var(--emerald-light); text-decoration: none; flex: 1;">
-                  🗺️ <span data-i18n="btn_view_map">Open Google Maps</span>
+                  🗺️ <span data-i18n="btn_view_map">Map</span>
                 </a>
 
                 <button class="btn btn-secondary driver-action-btn-mobile" style="color: var(--amber-light); flex: 1;" onclick="broadcastDriverLocation()">
-                  📍 <span>Broadcast Live GPS</span>
+                  📍 <span>Broadcast</span>
                 </button>
 
                 ${!isTransit ? `
                   <button class="btn btn-primary driver-action-btn-mobile" style="flex: 1; background: linear-gradient(135deg, #F59E0B, #D97706); border-color: #F59E0B;" onclick="startTransit(${activeJob.id})">
-                    🚚 <span data-i18n="btn_start_transit">Start Highway Transit</span>
+                    🚀 <span data-i18n="btn_start_transit">Start</span>
                   </button>
                 ` : `
                   <button class="btn btn-primary driver-action-btn-mobile" style="flex: 1;" onclick="openPodModal()">
-                    📸 <span data-i18n="btn_mark_delivered">Deliver & Upload POD</span>
+                    📸 <span data-i18n="btn_mark_delivered">Deliver</span>
                   </button>
                 `}
               </div>
@@ -694,7 +694,7 @@
                 <div style="font-size: 0.75rem; color: var(--text-muted);">Instant Escrow Clearance</div>
                 <div class="driver-load-card-actions" style="display: flex; gap: 8px; margin-top: 4px;">
                   <a href="${mapsUrl}" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration: none;">🗺️ Map</a>
-                  <button class="btn btn-primary btn-sm" onclick="acceptLoad(${o.id})" data-i18n="btn_accept_job">Accept Mission</button>
+                  <button class="btn btn-primary btn-sm" onclick="acceptLoad(${o.id})" data-i18n="btn_accept_job">Accept</button>
                 </div>
               </div>
             </div>
