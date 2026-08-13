@@ -1,14 +1,432 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=/src/main/resources/static/login.html" />
-  <title>Apex Transport</title>
-  <script>
-    window.location.href = "/src/main/resources/static/login.html";
-  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Apex Transport | High-Precision Autonomous Freight Network</title>
+  <link rel="stylesheet" href="/css/main.css?v=5.0" />
+  <script src="/js/theme.js?v=5.0"></script>
+  <style>
+    /* Hero & Landing Styles */
+    .landing-hero {
+      text-align: center;
+      padding: 5rem 1.5rem 3rem;
+      max-width: 960px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .landing-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      background: var(--emerald-subtle);
+      border: 1px solid var(--border-emerald);
+      color: var(--emerald-light);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+    .hero-main-title {
+      font-family: 'Boldonse', 'Syne', sans-serif !important;
+      font-size: clamp(3rem, 7vw, 5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 1.25rem;
+      color: var(--text-primary);
+    }
+    [data-theme="dark"] .hero-main-title {
+      background: linear-gradient(135deg, #ffffff 40%, #a7f3d0 80%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 40px rgba(16, 185, 129, 0.25);
+    }
+    [data-theme="light"] .hero-main-title {
+      background: linear-gradient(135deg, #0f172a 40%, #065f46 80%, #059669 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      color: var(--text-secondary);
+      max-width: 680px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-hero-primary {
+      background: var(--emerald-primary);
+      color: #090C10;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 14px 32px;
+      border-radius: var(--radius-full);
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s ease;
+      box-shadow: 0 0 25px var(--emerald-glow);
+      text-decoration: none;
+    }
+    .btn-hero-primary:hover {
+      background: var(--emerald-light);
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(16, 185, 129, 0.5);
+    }
+    .btn-hero-secondary {
+      background: var(--bg-surface-elevated);
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 14px 30px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-prominent);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s ease;
+      text-decoration: none;
+    }
+    .btn-hero-secondary:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--amber-light);
+      color: var(--amber-light);
+      transform: translateY(-2px);
+    }
+
+    /* Auth Card Section */
+    .auth-section {
+      max-width: 520px;
+      margin: 2rem auto 5rem;
+      padding: 0 1.5rem;
+    }
+    .auth-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border-prominent);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 0, 0, 0.7);
+      position: relative;
+    }
+
+    /* How It Works Showcase */
+    .how-it-works-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 5rem 1.5rem 6rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .section-header h2 {
+      font-size: 2.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+    }
+    .feature-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.75rem;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .feature-card:hover {
+      background: var(--bg-surface-elevated);
+      border-color: var(--border-emerald);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+    .feature-icon-box {
+      width: 54px;
+      height: 54px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 1.5rem;
+    }
+    .icon-box-emerald { background: var(--emerald-subtle); border: 1px solid var(--border-emerald); color: var(--emerald-light); }
+    .icon-box-amber { background: var(--amber-subtle); border: 1px solid var(--border-amber); color: var(--amber-light); }
+    .icon-box-cyan { background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); color: #38bdf8; }
+    .icon-box-purple { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+    .feature-card p {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+  </style>
 </head>
 <body>
-  <p>Redirecting to <a href="/src/main/resources/static/login.html">Apex Transport Login</a>...</p>
+  <div class="ambient-bg"></div>
+
+  <div class="app-wrapper">
+    <!-- Topbar Navigation -->
+    <header class="topbar">
+      <a href="/" class="brand">
+        <div class="brand-icon">🚛</div>
+        <div>
+          <div class="brand-name brand-apex">Apex Transport</div>
+          <div class="brand-tag mono" data-i18n="brand_tagline">Next-Gen Autonomous Freight Network</div>
+        </div>
+      </a>
+
+      <!-- Navbar Actions (Theme Toggle & Hinglish/English Toggle) -->
+      <div class="topbar-actions">
+        <button class="btn-theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
+          ☀️ <span class="theme-label">Day</span>
+        </button>
+        <div class="navbar-lang-container"></div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="landing-hero">
+      <div class="landing-badge mono">
+        <span>⚡</span> AI Logistics Telematics
+      </div>
+      <h1 class="hero-main-title brand-apex" data-i18n="hero_title">Apex Transport</h1>
+      <p class="hero-subtitle" data-i18n="hero_subtitle">
+        Enterprise AI-orchestrated intercity freight & cold-chain telematics network. High-throughput dispatch, Google Maps real-time navigation, and digital proof of delivery.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="#auth-section" class="btn-hero-primary" onclick="focusAuth('login')">
+          <span data-i18n="btn_get_started">Get Started</span>
+          <span>→</span>
+        </a>
+        <a href="#how-it-works" class="btn-hero-secondary">
+          <span>🔍</span>
+          <span data-i18n="btn_how_it_works">What is Apex Transport?</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Sign In & Register Card Section -->
+    <section id="auth-section" class="auth-section">
+      <div class="auth-card">
+        <!-- Tab Bar -->
+        <div class="tab-bar" style="width: 100%; margin-bottom: 1.75rem;">
+          <button class="tab-btn active" id="tab-login-btn" onclick="switchAuthTab('login')" style="flex: 1;" data-i18n="tab_sign_in">
+            Sign In
+          </button>
+          <button class="tab-btn" id="tab-register-btn" onclick="switchAuthTab('register')" style="flex: 1;" data-i18n="tab_register">
+            Register Account
+          </button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" onsubmit="handleManualLogin(event)">
+          <div class="form-group">
+            <label class="form-label" data-i18n="label_email">Official Email Address</label>
+            <input type="email" id="login-email" class="form-control" data-i18n-placeholder="placeholder_email" placeholder="name@company.com" required value="vikram@transporter.com" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="label_password">Secure Password</label>
+            <input type="password" id="login-password" class="form-control" data-i18n-placeholder="placeholder_password" placeholder="••••••••••••" required value="vikram123" />
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 1.25rem;" id="login-submit-btn">
+            <span data-i18n="btn_login">Access Workspace</span> →
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" onsubmit="handleRegister(event)" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="reg-name" class="form-control" placeholder="e.g. Ramesh Chandra" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="label_email">Email Address</label>
+            <input type="email" id="reg-email" class="form-control" placeholder="name@company.com" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="label_password">Password</label>
+            <input type="password" id="reg-password" class="form-control" placeholder="Create strong password" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Account Role / Portal</label>
+            <select id="reg-role" class="form-control">
+              <option value="TRANSPORTER">🏢 Transporter / Shipper (Post Freight)</option>
+              <option value="DRIVER">🚚 Fleet Truck Driver (Deliver Goods)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-amber btn-lg" style="width: 100%; margin-top: 1.25rem;" id="reg-submit-btn">
+            <span data-i18n="btn_register_submit">Create Apex Account</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- What Apex Transport Is / How It Works -->
+    <section id="how-it-works" class="how-it-works-section">
+      <div class="section-header">
+        <span class="badge badge-transit mono" style="margin-bottom: 10px;">OPERATIONAL WORKFLOW</span>
+        <h2 class="brand-apex" data-i18n="how_title">Autonomous Freight Architecture</h2>
+        <p style="color: var(--text-secondary); max-width: 720px; margin: 0 auto;" data-i18n="how_desc">
+          Engineered for maximum payload efficiency, transparent pricing, and sub-second driver dispatch across India.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card">
+          <div class="feature-icon-box icon-box-emerald">📦</div>
+          <h3 data-i18n="step1_title">1. Multi-Attribute Load Dispatch</h3>
+          <p data-i18n="step1_desc">
+            Shippers specify cargo volume, cold chain targets, package counts, GST e-way bills, and geo-fenced routes with instantaneous algorithmic pricing.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card">
+          <div class="feature-icon-box icon-box-amber">⚡</div>
+          <h3 data-i18n="step2_title">2. High-Priority Driver Match</h3>
+          <p data-i18n="step2_desc">
+            Nearby verified fleet carriers receive instantaneous load alerts and can claim consignments on a strict First-Come, First-Serve basis.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card">
+          <div class="feature-icon-box icon-box-cyan">🗺️</div>
+          <h3 data-i18n="step3_title">3. Real-Time Telematics & Navigation</h3>
+          <p data-i18n="step3_desc">
+            One-click handoff to Google Maps with automated origin-destination routing, GPS telemetry tracking, and live route status.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feature-card">
+          <div class="feature-icon-box icon-box-purple">🔒</div>
+          <h3 data-i18n="step4_title">4. Digital Proof of Delivery & Rating</h3>
+          <p data-i18n="step4_desc">
+            Mandatory photo POD verification, instant payment clearing, and two-way 5-star performance rating between shippers and drivers.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 2.5rem 1rem; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 0.85rem;">
+      <p class="brand-apex" style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 6px;">Apex Transport Systems &copy; 2026</p>
+      <p>Cybernetic Logistics & Cold-Chain Telematics Platform. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script src="/js/i18n.js?v=5.0"></script>
+  <script src="/js/api.js?v=5.0"></script>
+  <script>
+    function switchAuthTab(tab) {
+      const loginForm = document.getElementById('login-form');
+      const regForm = document.getElementById('register-form');
+      const tabLoginBtn = document.getElementById('tab-login-btn');
+      const tabRegBtn = document.getElementById('tab-register-btn');
+
+      if (tab === 'login') {
+        loginForm.style.display = 'block';
+        regForm.style.display = 'none';
+        tabLoginBtn.classList.add('active');
+        tabRegBtn.classList.remove('active');
+      } else {
+        loginForm.style.display = 'none';
+        regForm.style.display = 'block';
+        tabRegBtn.classList.add('active');
+        tabLoginBtn.classList.remove('active');
+      }
+      I18n.applyTranslations();
+    }
+
+    function focusAuth(tab) {
+      switchAuthTab(tab);
+      const emailInput = document.getElementById('login-email');
+      if (emailInput) setTimeout(() => emailInput.focus(), 300);
+    }
+
+    function redirectRole(role) {
+      if (role === 'ADMIN') window.location.href = '/admin.html';
+      else if (role === 'DRIVER') window.location.href = '/driver.html';
+      else window.location.href = '/transporter.html';
+    }
+
+    async function handleManualLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('login-submit-btn');
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = `<span>Authenticating...</span>`;
+        const res = await api.login(email, password);
+        showToast(I18n.t('login_success'), 'success');
+        setTimeout(() => redirectRole(res.user.role), 350);
+      } catch (err) {
+        showToast(err.message || I18n.t('toast_error'), 'error');
+        btn.disabled = false;
+        btn.innerHTML = `<span data-i18n="btn_login">${I18n.t('btn_login')}</span> →`;
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      const role = document.getElementById('reg-role').value;
+      const btn = document.getElementById('reg-submit-btn');
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = `<span>Creating Account...</span>`;
+        const res = await api.register({ name, email, password, role });
+        showToast(I18n.t('register_success'), 'success');
+        setTimeout(() => redirectRole(res.user.role), 400);
+      } catch (err) {
+        showToast(err.message || I18n.t('toast_error'), 'error');
+        btn.disabled = false;
+        btn.innerHTML = `<span data-i18n="btn_register_submit">${I18n.t('btn_register_submit')}</span>`;
+      }
+    }
+  </script>
 </body>
 </html>

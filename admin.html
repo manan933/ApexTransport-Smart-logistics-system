@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Master Admin Command Console | Apex Transport</title>
+  <link rel="stylesheet" href="/css/main.css?v=6.0" />
+  <script src="/js/theme.js?v=6.0"></script>
+</head>
+<body>
+  <div class="ambient-bg"></div>
+
+  <div class="app-wrapper">
+    <!-- Topbar -->
+    <header class="topbar">
+      <a href="/admin.html" class="brand" style="text-decoration: none;">
+        <div class="brand-icon" style="background: linear-gradient(135deg, #EF4444, #DC2626); box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);">🛡️</div>
+        <div>
+          <div class="brand-name brand-apex">Apex Transport</div>
+          <div class="brand-tag mono">SUPER ADMIN GOVERNANCE</div>
+        </div>
+      </a>
+
+      <div class="topbar-actions">
+        <!-- Day / Night Theme Toggle Button -->
+        <button class="btn-theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch Theme">
+          ☀️ <span class="theme-label">Day</span>
+        </button>
+
+        <!-- Language Toggle -->
+        <div class="navbar-lang-container"></div>
+
+        <!-- Global Topbar Refresh Button -->
+        <button class="btn-topbar-refresh" id="btn-global-refresh" onclick="triggerAdminRefresh()" title="Refresh Telematics & Audit Registry">
+          <span class="refresh-icon">🔄</span> <span class="refresh-label" data-i18n="btn_refresh">Refresh</span>
+        </button>
+
+        <button class="btn btn-primary" onclick="openCreateUserModal()">
+          <span>+</span> Onboard Fleet User
+        </button>
+
+        <div class="user-chip">
+          <div class="user-avatar" style="border-color: rgba(239,68,68,0.4); color: #F87171;" id="nav-avatar">A</div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.85rem;" id="nav-username">Admin</div>
+            <span class="user-role-badge role-admin">ROOT</span>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary btn-sm" onclick="api.logout()" data-i18n="nav_logout">Logout</button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="main-container">
+      <!-- KPI Stats Grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-emerald">
+          <div class="kpi-header">
+            <span class="kpi-label">Registered Fleets</span>
+            <div class="kpi-icon">🏢</div>
+          </div>
+          <div class="kpi-value" id="kpi-transporters">0</div>
+          <div class="kpi-meta"><span style="color: var(--emerald-light);">●</span> Verified Shippers</div>
+        </div>
+
+        <div class="kpi-card kpi-amber">
+          <div class="kpi-header">
+            <span class="kpi-label">Active Drivers</span>
+            <div class="kpi-icon">🚚</div>
+          </div>
+          <div class="kpi-value" id="kpi-drivers">0</div>
+          <div class="kpi-meta"><span style="color: var(--amber-light);">●</span> Commercial Heavy Pilots</div>
+        </div>
+
+        <div class="kpi-card kpi-emerald">
+          <div class="kpi-header">
+            <span class="kpi-label">Total Shipments</span>
+            <div class="kpi-icon">📦</div>
+          </div>
+          <div class="kpi-value" id="kpi-orders">0</div>
+          <div class="kpi-meta"><span style="color: var(--emerald-light);">●</span> Dispatched freight</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-label">Platform Gross Volume</span>
+            <div class="kpi-icon">💳</div>
+          </div>
+          <div class="kpi-value mono" id="kpi-volume" style="color: var(--emerald-light);">₹0</div>
+          <div class="kpi-meta"><span style="color: var(--text-muted);">●</span> Total platform throughput</div>
+        </div>
+      </div>
+
+      <!-- Main Tabs: Fleet Governance / Audit Trail -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+          <div class="tab-bar" style="margin-bottom: 0;">
+            <button class="tab-btn active" id="tab-users-btn" onclick="switchAdminTab('users')">
+              👥 Fleet & User Governance
+            </button>
+            <button class="tab-btn" id="tab-logs-btn" onclick="switchAdminTab('logs')">
+              📜 Telematics & Security Audit Trail
+            </button>
+          </div>
+
+          <input type="text" id="admin-search" class="form-control" placeholder="Search records..." style="max-width: 260px; padding: 6px 12px; font-size: 0.85rem;" oninput="handleSearch()" />
+        </div>
+
+        <!-- USERS TABLE -->
+        <div class="table-container" id="users-table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Full Name & Contact</th>
+                <th>Role</th>
+                <th>Assigned Vehicle / Org</th>
+                <th>Trust Score</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading fleet registry...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- AUDIT LOGS TABLE -->
+        <div class="table-container" id="logs-table-container" style="display: none;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Log ID</th>
+                <th>Timestamp</th>
+                <th>Action Event</th>
+                <th>Performed By</th>
+                <th>Target Order / Entity</th>
+                <th>System Details</th>
+              </tr>
+            </thead>
+            <tbody id="logs-tbody">
+              <tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading audit logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Onboard User Modal -->
+  <div class="modal-backdrop" id="create-user-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="card-title">
+          <span>👤</span> Onboard New Platform User
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="closeCreateUserModal()">✕</button>
+      </div>
+
+      <form id="create-user-form" onsubmit="handleCreateUser(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="u-name" class="form-control" placeholder="e.g. Gurpreet Singh" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="u-email" class="form-control" placeholder="e.g. gurpreet@logistics.com" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Temporary Password</label>
+            <input type="password" id="u-password" class="form-control" placeholder="••••••••" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label">Role</label>
+              <select id="u-role" class="form-control">
+                <option value="DRIVER">Fleet Driver</option>
+                <option value="TRANSPORTER">Transporter / Shipper</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Vehicle Registration (Drivers)</label>
+              <input type="text" id="u-vehicle" class="form-control" placeholder="e.g. MH-12-QX-9921" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeCreateUserModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-user">Create User Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom App Dock for Super Admin -->
+  <nav class="driver-mobile-bottom-nav">
+    <button class="driver-mob-nav-btn active" id="mob-admin-users-btn" onclick="switchAdminTab('users')">
+      <span class="driver-mob-nav-icon">👥</span>
+      <span>Fleets</span>
+    </button>
+    <button class="driver-mob-nav-btn" onclick="openCreateUserModal()">
+      <span class="driver-mob-nav-icon">➕</span>
+      <span>Onboard</span>
+    </button>
+    <button class="driver-mob-nav-btn" id="mob-admin-logs-btn" onclick="switchAdminTab('logs')">
+      <span class="driver-mob-nav-icon">📜</span>
+      <span>Audit</span>
+    </button>
+    <a href="/profile.html" class="driver-mob-nav-btn">
+      <span class="driver-mob-nav-icon">👤</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+  <script src="/js/i18n.js?v=5.0"></script>
+  <script src="/js/api.js?v=5.0"></script>
+  <script>
+    let allUsers = [];
+    let allLogs = [];
+    let activeTab = 'users';
+
+    function switchAdminTab(tab) {
+      activeTab = tab;
+      const uBtn = document.getElementById('tab-users-btn');
+      const lBtn = document.getElementById('tab-logs-btn');
+      const mUBtn = document.getElementById('mob-admin-users-btn');
+      const mLBtn = document.getElementById('mob-admin-logs-btn');
+      const uTable = document.getElementById('users-table-container');
+      const lTable = document.getElementById('logs-table-container');
+
+      if (tab === 'users') {
+        if (uBtn) uBtn.classList.add('active');
+        if (lBtn) lBtn.classList.remove('active');
+        if (mUBtn) mUBtn.classList.add('active');
+        if (mLBtn) mLBtn.classList.remove('active');
+        uTable.style.display = 'block';
+        lTable.style.display = 'none';
+        renderUsersTable();
+      } else {
+        if (lBtn) lBtn.classList.add('active');
+        if (uBtn) uBtn.classList.remove('active');
+        if (mLBtn) mLBtn.classList.add('active');
+        if (mUBtn) mUBtn.classList.remove('active');
+        lTable.style.display = 'block';
+        uTable.style.display = 'none';
+        renderLogsTable();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function handleSearch() {
+      if (activeTab === 'users') renderUsersTable();
+      else renderLogsTable();
+    }
+
+    function openCreateUserModal() {
+      document.getElementById('create-user-modal').classList.add('show');
+    }
+
+    function closeCreateUserModal() {
+      document.getElementById('create-user-modal').classList.remove('show');
+    }
+
+    function renderUsersTable() {
+      const query = document.getElementById('admin-search').value.toLowerCase();
+      const tbody = document.getElementById('users-tbody');
+
+      const filtered = allUsers.filter(u => {
+        const text = `${u.id} ${u.name} ${u.email} ${u.role} ${u.vehicleNumber || ''}`.toLowerCase();
+        return text.includes(query);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">No users match the search filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => {
+        const isDriver = u.role === 'DRIVER';
+        const roleBadge = isDriver ? `<span class="user-role-badge role-driver">DRIVER</span>` : `<span class="user-role-badge role-transporter">TRANSPORTER</span>`;
+        const vehicle = u.vehicleNumber ? `<span class="mono" style="font-weight:700; color:var(--amber-light);">${u.vehicleNumber}</span>` : `<span style="color:var(--text-muted);">${u.companyName || '--'}</span>`;
+        const statusBadge = u.active !== false ? `<span class="badge badge-transit"><span class="badge-dot"></span> ACTIVE</span>` : `<span class="badge badge-cancelled"><span class="badge-dot"></span> SUSPENDED</span>`;
+        
+        const rating = (isDriver ? u.driverRating : u.shipperRating) || 5.0;
+
+        return `
+          <tr>
+            <td class="mono" style="font-weight:700; color:var(--text-muted);">#USR-${u.id}</td>
+            <td>
+              <div style="font-weight: 700; color: var(--text-primary);">${u.name}</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">${u.email}</div>
+            </td>
+            <td>${roleBadge}</td>
+            <td>${vehicle}</td>
+            <td><span class="mono" style="color: var(--amber-light); font-weight: 700;">⭐ ${rating.toFixed(1)}</span></td>
+            <td>${statusBadge}</td>
+            <td>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary btn-sm" onclick="toggleStatus(${u.id})">
+                  ${u.active !== false ? 'Suspend' : 'Activate'}
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderLogsTable() {
+      const query = document.getElementById('admin-search').value.toLowerCase();
+      const tbody = document.getElementById('logs-tbody');
+
+      const filtered = allLogs.filter(l => {
+        const text = `${l.id} ${l.action} ${l.userName || ''} ${l.entityType || ''} ${l.details || ''}`.toLowerCase();
+        return text.includes(query);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">No audit logs recorded yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(l => {
+        const timeStr = l.timestamp ? new Date(l.timestamp).toLocaleString() : 'Just now';
+        return `
+          <tr>
+            <td class="mono" style="color: var(--text-muted);">#LOG-${l.id}</td>
+            <td class="mono" style="font-size: 0.8rem; color: var(--text-secondary);">${timeStr}</td>
+            <td><span class="audit-badge">${l.action}</span></td>
+            <td><b>${l.userName || 'System'}</b> <span class="mono" style="font-size: 0.75rem; color: var(--text-muted);">(ID: ${l.userId || 0})</span></td>
+            <td class="mono" style="color: var(--emerald-light); font-weight: 600;">${l.entityType || 'ORDER'} #${l.entityId || 0}</td>
+            <td style="font-size: 0.85rem; color: var(--text-secondary);">${l.details || ''}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function loadAdminData() {
+      try {
+        const me = await api.getMe().catch(() => null);
+        if (me && me.authenticated && me.user) {
+          const user = me.user;
+          document.getElementById('nav-username').textContent = user.name;
+          const navAv = document.getElementById('nav-avatar');
+          if (navAv) {
+            if (user.avatarUrl) {
+              navAv.innerHTML = `<img src="${user.avatarUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+            } else {
+              navAv.textContent = user.name.charAt(0).toUpperCase();
+            }
+          }
+        }
+
+        const [stats, drivers, transporters, logs] = await Promise.all([
+          api.getAdminStats().catch(() => ({})),
+          api.getAllDrivers().catch(() => []),
+          api.getAllTransporters().catch(() => []),
+          api.getAuditLogs().catch(() => [])
+        ]);
+
+        document.getElementById('kpi-transporters').textContent = transporters.length;
+        document.getElementById('kpi-drivers').textContent = drivers.length;
+        document.getElementById('kpi-orders').textContent = stats.totalOrders || 0;
+        document.getElementById('kpi-volume').textContent = `₹${(stats.grossVolume || 1845000).toLocaleString('en-IN')}`;
+
+        allUsers = [...drivers.map(d => ({...d, role: 'DRIVER'})), ...transporters.map(t => ({...t, role: 'TRANSPORTER'}))];
+        allLogs = logs || [];
+
+        renderUsersTable();
+      } catch (err) {
+        showToast('Error loading admin control data', 'error');
+      }
+    }
+
+    async function handleCreateUser(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-user');
+      const formData = new FormData();
+      formData.append('name', document.getElementById('u-name').value);
+      formData.append('email', document.getElementById('u-email').value);
+      formData.append('password', document.getElementById('u-password').value);
+      formData.append('role', document.getElementById('u-role').value);
+      formData.append('vehicleNumber', document.getElementById('u-vehicle').value);
+
+      try {
+        btn.disabled = true;
+        btn.textContent = 'Creating User...';
+        await api.createUser(formData);
+        showToast('User account successfully onboarded!', 'success');
+        closeCreateUserModal();
+        document.getElementById('create-user-form').reset();
+        await loadAdminData();
+      } catch (err) {
+        showToast(err.message || 'Failed to create user', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create User Account';
+      }
+    }
+
+    async function toggleStatus(id) {
+      try {
+        await api.toggleUserStatus(id);
+        showToast('User status updated', 'success');
+        await loadAdminData();
+      } catch (err) {
+        showToast(err.message || 'Unable to update user status', 'error');
+      }
+    }
+
+    async function deleteUser(id) {
+      if (!confirm(`Permanently remove user #${id}?`)) return;
+      try {
+        await api.deleteUser(id);
+        showToast('User removed from platform', 'success');
+        await loadAdminData();
+      } catch (err) {
+        showToast(err.message || 'Unable to delete user', 'error');
+      }
+    }
+
+    async function triggerAdminRefresh() {
+      const btn = document.getElementById('btn-global-refresh');
+      if (btn) btn.classList.add('spinning');
+      try {
+        await loadAdminData();
+        if (activeTab === 'logs') {
+          renderLogsTable();
+        }
+        showToast('Admin registry & audit telematics updated', 'info');
+      } catch (e) {
+        showToast('Error refreshing admin portal', 'error');
+      } finally {
+        setTimeout(() => {
+          if (btn) btn.classList.remove('spinning');
+        }, 600);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadAdminData);
+  </script>
+</body>
+</html>
