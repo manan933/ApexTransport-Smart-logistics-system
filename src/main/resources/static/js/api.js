@@ -271,7 +271,7 @@ const api = {
           if (user.role === 'DRIVER') {
             user.totalDeliveries = orders.filter(o => o.status === 'COMPLETED' && o.driver && o.driver.id === user.id).length;
           } else if (user.role === 'TRANSPORTER') {
-            user.totalShippedOrders = orders.filter(o => o.transporter && o.transporter.id === user.id).length || orders.length;
+            user.totalShippedOrders = orders.filter(o => o.transporter && o.transporter.id === user.id).length;
           }
           return { authenticated: true, user };
         } catch (e) {}
@@ -411,7 +411,7 @@ const api = {
       }
 
       const newOrder = {
-        id: Math.floor(100 + Math.random() * 900),
+        id: Date.now(),
         pickupLocation: pickup,
         dropLocation: drop,
         originHub: pickup,
