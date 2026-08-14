@@ -135,23 +135,27 @@ public class AdminService {
     }
 
     @Transactional
-    public boolean toggleUserStatus(Long userId) {
+    public Boolean toggleUserStatus(Long userId) {
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isPresent()) {
             User u = userOpt.get();
-            u.setIsActive(u.getIsActive() == null || !u.getIsActive());
+            boolean newStatus = u.getIsActive() == null || !u.getIsActive();
+            u.setIsActive(newStatus);
             userRepository.save(u);
-            return true;
+            return newStatus;
         }
-        return false;
+        return null;
     }
 
     @Transactional
     public boolean deleteUser(Long userId) {
-        if (userRepository.existsById(userId)) {
+        if (!userRepository.existsById(userId)) return false;
+        try {
             userRepository.deleteById(userId);
+            userRepository.flush();
             return true;
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return false;
         }
-        return false;
     }
 }

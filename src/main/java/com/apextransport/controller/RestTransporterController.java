@@ -83,7 +83,7 @@ public class RestTransporterController {
         m.put("targetTemp", o.getTargetTemp());
         m.put("isStackable", !Boolean.FALSE.equals(o.getIsStackable()));
         m.put("invoiceUrl", o.getInvoiceUrl());
-        m.put("docUrls", o.getDocUrls() != null ? Arrays.asList(o.getDocUrls().split(",")) : Collections.emptyList());
+        m.put("docUrls", o.getDocUrls() != null && !o.getDocUrls().isBlank() ? Arrays.asList(o.getDocUrls().split(",")) : Collections.emptyList());
         m.put("driverNotes", o.getDriverNotes() != null ? o.getDriverNotes() : "");
 
         m.put("weight", o.getWeight() != null ? o.getWeight() : 0.0);

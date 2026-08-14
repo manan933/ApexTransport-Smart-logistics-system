@@ -379,7 +379,7 @@
         document.getElementById('kpi-transporters').textContent = transporters.length;
         document.getElementById('kpi-drivers').textContent = drivers.length;
         document.getElementById('kpi-orders').textContent = stats.totalOrders || 0;
-        document.getElementById('kpi-volume').textContent = `₹${(stats.grossVolume || 1845000).toLocaleString('en-IN')}`;
+        document.getElementById('kpi-volume').textContent = `₹${(stats.grossVolume != null ? stats.grossVolume : (stats.totalVolume != null ? stats.totalVolume : 0)).toLocaleString('en-IN')}`;
 
         allUsers = [...drivers.map(d => ({...d, role: 'DRIVER'})), ...transporters.map(t => ({...t, role: 'TRANSPORTER'}))];
         allLogs = logs || [];

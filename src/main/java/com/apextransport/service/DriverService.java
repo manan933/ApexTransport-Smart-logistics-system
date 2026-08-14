@@ -51,53 +51,7 @@ public class DriverService {
     }
 
     public boolean isVehicleCompatible(User driver, String orderVehicleType) {
-        if (orderVehicleType == null || orderVehicleType.isBlank() || orderVehicleType.equalsIgnoreCase("ANY") || orderVehicleType.equalsIgnoreCase("ALL")) {
-            return true;
-        }
-        if (driver == null) return true;
-
-        String driverPrimary = driver.getVehicleType();
-        String driverAdditional = driver.getAdditionalVehicles();
-
-        // If driver has no vehicle set or is set to ALL / Any / Fleet Operator
-        if (driverPrimary == null || driverPrimary.isBlank() || 
-            driverPrimary.equalsIgnoreCase("ALL") || driverPrimary.equalsIgnoreCase("ANY") || 
-            driverPrimary.toLowerCase().contains("all") || driverPrimary.toLowerCase().contains("fleet")) {
-            return true;
-        }
-
-        // Collect all driver vehicle tokens
-        StringBuilder allVehicles = new StringBuilder(driverPrimary);
-        if (driverAdditional != null && !driverAdditional.isBlank()) {
-            allVehicles.append(",").append(driverAdditional);
-        }
-
-        String[] vehicleList = allVehicles.toString().split("[,;|/]");
-        String cleanOrder = normalizeVehicle(orderVehicleType);
-
-        for (String v : vehicleList) {
-            String cleanDriver = normalizeVehicle(v);
-            if (cleanDriver.isBlank()) continue;
-            if (cleanDriver.equals("all") || cleanDriver.equals("any") || cleanDriver.contains("fleet")) return true;
-            if (cleanOrder.equals(cleanDriver)) return true;
-            if (cleanOrder.contains(cleanDriver) || cleanDriver.contains(cleanOrder)) return true;
-
-            // Check key classification tokens
-            String[] keyTokens = {"32ft", "40ft", "20ft", "22ft", "14ft", "17ft", "19ft", "eicher", "tataace", "chhotahathi", "pickup", "tanker", "trailer", "flatbed", "odc", "container"};
-            for (String token : keyTokens) {
-                if (cleanDriver.contains(token) && cleanOrder.contains(token)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private String normalizeVehicle(String v) {
-        if (v == null) return "";
-        return v.toLowerCase()
-                .replaceAll("[^a-z0-9]", "")
-                .trim();
+        return true;
     }
 
     public List<Order> getAllPendingOrders() {
@@ -186,7 +140,8 @@ public class DriverService {
         order.setStatus(Order.OrderStatus.IN_TRANSIT);
         order.setStartedAt(LocalDateTime.now());
 
-        if (order.getPickupLat() != null && order.getDropLat() != null) {
+        if (order.getPickupLat() != null && order.getDropLat() != null
+                && order.getPickupLng() != null && order.getDropLng() != null) {
             order.setCurrentLat((order.getPickupLat() + order.getDropLat()) / 2.0);
             order.setCurrentLng((order.getPickupLng() + order.getDropLng()) / 2.0);
         }

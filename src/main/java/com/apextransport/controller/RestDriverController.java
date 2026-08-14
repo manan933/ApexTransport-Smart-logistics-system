@@ -286,6 +286,7 @@ public class RestDriverController {
     }
 
     @PostMapping("/orders/{id}/location")
+    @Transactional
     public ResponseEntity<?> updateLocation(
             @PathVariable Long id,
             @RequestParam("lat") Double lat,
@@ -308,11 +309,13 @@ public class RestDriverController {
             return ResponseEntity.notFound().build();
 
         Order order = orderOpt.get();
-        if (order.getDriver() != null && order.getDriver().getId().equals(driver.getId())) {
-            order.setCurrentLat(lat);
-            order.setCurrentLng(lng);
-            orderRepository.save(order);
+        if (order.getDriver() == null || !order.getDriver().getId().equals(driver.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "You are not the assigned driver for this order."));
         }
+
+        order.setCurrentLat(lat);
+        order.setCurrentLng(lng);
+        orderRepository.save(order);
 
         Map<String, Object> resp = new HashMap<>();
         resp.put("success", true);

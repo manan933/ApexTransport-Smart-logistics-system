@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -134,15 +133,11 @@ public class RestAdminController {
             u.setIsActive(true);
 
             if (role == User.Role.TRANSPORTER) {
-                u.setCompanyName(companyName != null && !companyName.isBlank() ? companyName : name + " Logistics");
-                u.setAvatarUrl("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200");
+                u.setCompanyName(companyName != null && !companyName.isBlank() ? companyName : "");
             } else if (role == User.Role.DRIVER) {
-                u.setVehicleNumber(vehicleNumber != null ? vehicleNumber : "MH-12-TX-1001");
-                u.setVehicleType(vehicleType != null ? vehicleType : "Heavy Freight Trailer");
-                u.setLicenseNumber(licenseNumber != null ? licenseNumber : "DL-11928392");
-                u.setAvatarUrl("https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200");
-            } else {
-                u.setAvatarUrl("https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200");
+                u.setVehicleNumber(vehicleNumber != null ? vehicleNumber : "");
+                u.setVehicleType(vehicleType != null && !vehicleType.isBlank() ? vehicleType : "Standard Truck");
+                u.setLicenseNumber(licenseNumber != null ? licenseNumber : "");
             }
 
             if (avatarFile != null && !avatarFile.isEmpty()) {
@@ -164,7 +159,10 @@ public class RestAdminController {
         if (admin == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Unauthorized"));
 
-        boolean newStatus = adminService.toggleUserStatus(id);
+        Boolean newStatus = adminService.toggleUserStatus(id);
+        if (newStatus == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
+        }
         return ResponseEntity.ok(Map.of("success", true, "isActive", newStatus));
     }
 

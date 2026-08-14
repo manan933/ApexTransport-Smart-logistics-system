@@ -745,7 +745,7 @@
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
                 </span>
-                <input type="text" id="login-email" placeholder="Enter ID (1, 2, 3) or email" value="1" required />
+                <input type="text" id="login-email" placeholder="Enter ID (1, 2, 3) or email" required />
               </div>
             </div>
 
@@ -758,7 +758,7 @@
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                   </svg>
                 </span>
-                <input type="password" id="login-password" placeholder="Enter Password" value="1" required />
+                <input type="password" id="login-password" placeholder="Enter Password" required />
                 <span class="apx-icon-right" onclick="togglePasswordVisibility('login-password')" title="Toggle password visibility">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7z"></path>
@@ -855,10 +855,22 @@
                     <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                   </svg>
                 </span>
-                <select id="reg-role" required>
+                <select id="reg-role" onchange="handleRegRoleChange(this.value)" required>
                   <option value="TRANSPORTER">Transporter (Shipper)</option>
                   <option value="DRIVER">Fleet Driver</option>
                 </select>
+              </div>
+            </div>
+
+            <div class="apx-field" id="reg-detail-field">
+              <label class="apx-label" id="reg-detail-label" for="reg-detail-input">Company Name (Optional)</label>
+              <div class="apx-input-wrap">
+                <span class="apx-icon-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+                  </svg>
+                </span>
+                <input type="text" id="reg-detail-input" placeholder="e.g. Acme Logistics Ltd" />
               </div>
             </div>
 
@@ -896,6 +908,18 @@
     function changeLanguage(lang) {
       if (window.I18n) {
         I18n.setLang(lang);
+      }
+    }
+
+    function handleRegRoleChange(role) {
+      const label = document.getElementById('reg-detail-label');
+      const input = document.getElementById('reg-detail-input');
+      if (role === 'DRIVER') {
+        if (label) label.textContent = 'Vehicle Number / Model (Optional)';
+        if (input) input.placeholder = 'e.g. MH 04 AZ 4589 (32ft Container)';
+      } else {
+        if (label) label.textContent = 'Company Name (Optional)';
+        if (input) input.placeholder = 'e.g. Acme Logistics Ltd';
       }
     }
 
@@ -964,12 +988,23 @@
       const email = document.getElementById('reg-email').value;
       const password = document.getElementById('reg-password').value;
       const role = document.getElementById('reg-role').value;
+      const detailVal = document.getElementById('reg-detail-input') ? document.getElementById('reg-detail-input').value : '';
       const btn = document.getElementById('reg-submit-btn');
+
+      const payload = {
+        name,
+        email,
+        password,
+        role,
+        companyName: role === 'TRANSPORTER' ? detailVal : '',
+        vehicleNumber: role === 'DRIVER' ? detailVal : '',
+        vehicleType: 'Standard Truck'
+      };
 
       try {
         btn.disabled = true;
         btn.innerHTML = `Creating Account...`;
-        const res = await api.register({ name, email, password, role });
+        const res = await api.register(payload);
         showToast(window.I18n ? I18n.t('register_success', 'Registration Successful!') : 'Registration Successful!', 'success');
         setTimeout(() => redirectRole(res.user.role), 400);
       } catch (err) {

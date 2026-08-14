@@ -1,6 +1,6 @@
 package com.apextransport.service;
 
-import com.google.cloud.storage.Blob;
+
 import com.google.cloud.storage.Bucket;
 import com.google.firebase.cloud.StorageClient;
 import com.apextransport.config.FirebaseConfig;
@@ -69,9 +69,9 @@ public class StorageService {
         // Try Firebase Storage first
         if (firebaseConfig.isFirebaseInitialized() && firebaseConfig.getStorageBucket() != null
                 && !firebaseConfig.getStorageBucket().isEmpty()) {
-            try {
+            try (InputStream is = file.getInputStream()) {
                 Bucket bucket = StorageClient.getInstance().bucket();
-                Blob blob = bucket.create(uniqueFilename, file.getInputStream(), contentType);
+                bucket.create(uniqueFilename, is, contentType);
                 String publicUrl = String.format("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
                         bucket.getName(), uniqueFilename.replace("/", "%2F"));
                 log.info("Uploaded file to Firebase Storage: {}", publicUrl);
@@ -86,7 +86,9 @@ public class StorageService {
         Files.createDirectories(targetDir);
         String simpleFilename = UUID.randomUUID() + ext;
         Path targetPath = targetDir.resolve(simpleFilename);
-        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+        try (InputStream is = file.getInputStream()) {
+            Files.copy(is, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        }
 
         return "/uploads/" + folder + "/" + simpleFilename;
     }

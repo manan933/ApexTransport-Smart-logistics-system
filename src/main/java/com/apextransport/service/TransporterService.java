@@ -276,12 +276,11 @@ public class TransporterService {
         }
         orderRepository.save(order);
 
-        auditLogService.log(
-                transporter,
-                "RATED_DRIVER",
-                "RATING",
-                String.format("Shipper rated Driver %.1f stars and settled payment for Order #%d", rating,
-                        order.getId()));
+        String logMsg = rating != null
+                ? String.format("Shipper rated Driver %.1f stars and settled payment for Order #%d", rating, order.getId())
+                : String.format("Shipper settled payment for Order #%d", order.getId());
+        String logAction = rating != null ? "RATED_DRIVER" : "SETTLED_PAYMENT";
+        auditLogService.log(transporter, logAction, "SETTLEMENT", logMsg);
 
         return true;
     }
@@ -390,15 +389,15 @@ public class TransporterService {
     }
 
     private double[] lookupCoords(String location, double defLat, double defLng) {
-        if (location == null)
-            return null;
+        if (location == null || location.isBlank())
+            return new double[] { defLat, defLng };
         String lower = location.toLowerCase();
         for (Map.Entry<String, double[]> entry : CITY_COORDS.entrySet()) {
             if (lower.contains(entry.getKey())) {
                 return entry.getValue();
             }
         }
-        return null;
+        return new double[] { defLat, defLng };
     }
 
     private Double calculateEstimatedFare(Double weight, double distKm) {

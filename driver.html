@@ -380,6 +380,7 @@
         if (aBtn) aBtn.classList.add('active');
         if (mABtn) mABtn.classList.add('active');
         if (aView) aView.style.display = 'block';
+        loadDriverData();
       } else {
         if (lBtn) lBtn.classList.add('active');
         if (mLBtn) mLBtn.classList.add('active');
@@ -553,10 +554,10 @@
               
               <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; margin-bottom: 12px;">
                 <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">ORIGIN PICKUP</div>
-                <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-top: 2px;">📍 ${escapeHtml(activeJob.pickupLocation || 'Pickup Location')}</div>
+                <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-top: 2px;">📍 ${escapeHtml(activeJob.pickupLocation || activeJob.originHub || activeJob.origin || 'Origin')}</div>
                 <div style="color: var(--emerald-light); font-weight: 900; font-size: 1.2rem; margin: 4px 0 2px 0;">⬇️</div>
                 <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">DESTINATION DROP</div>
-                <div style="font-size: 1.15rem; font-weight: 800; color: var(--emerald-light); margin-top: 2px;">🏁 ${escapeHtml(activeJob.dropLocation || 'Destination Location')}</div>
+                <div style="font-size: 1.15rem; font-weight: 800; color: var(--emerald-light); margin-top: 2px;">🏁 ${escapeHtml(activeJob.dropLocation || activeJob.destinationHub || activeJob.destination || 'Destination')}</div>
               </div>
 
               <div class="spec-tag-list" style="margin-bottom: 12px;">${specialBadges.join('')}</div>
@@ -565,7 +566,7 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.88rem;">
                   <div><span style="color: var(--text-muted);">Cargo:</span> <b>${escapeHtml(activeJob.goodsDescription || activeJob.goodsType || 'General Freight')}</b></div>
                   <div><span style="color: var(--text-muted);">Weight:</span> <b>${activeJob.weight || 0} KG</b></div>
-                  <div><span style="color: var(--text-muted);">Contact:</span> <b>${escapeHtml(activeJob.contactPersonName || 'Site Dispatch')}</b></div>
+                  <div><span style="color: var(--text-muted);">Contact:</span> <b>${escapeHtml(activeJob.contactPersonName || '')}</b></div>
                   <div><span style="color: var(--text-muted);">Vehicle:</span> <b>${escapeHtml(activeJob.vehicleType || 'Standard Truck')}</b></div>
                 </div>
                 ${activeJob.driverNotes ? `<div style="margin-top: 8px; font-size: 0.82rem; color: var(--amber-light);"><b>Note:</b> ${escapeHtml(activeJob.driverNotes)}</div>` : ''}
@@ -640,29 +641,25 @@
       const mobBadge = document.getElementById('mob-loads-badge');
       if (!container) return;
 
-      let filtered = availableLoads || [];
-      if (currentVehicleFilter !== 'ALL') {
-        const target = currentVehicleFilter.toLowerCase();
-        filtered = filtered.filter(o => o.vehicleType && o.vehicleType.toLowerCase().includes(target));
-      }
+      const list = availableLoads || [];
 
-      if (filtered.length === 0) {
-        if (mobBadge) mobBadge.style.display = (availableLoads && availableLoads.length > 0) ? 'inline-block' : 'none';
+      if (list.length === 0) {
+        if (mobBadge) mobBadge.style.display = 'none';
         container.innerHTML = `
           <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
             <div style="font-size: 2rem; margin-bottom: 4px;">📦</div>
-            <div>No open loads found matching this vehicle type. Check other fleet options or add more truck types!</div>
+            <div>No open loads on the freight exchange. Newly posted shipper consignments will appear here in real time!</div>
           </div>
         `;
         return;
       }
 
       if (mobBadge) {
-        mobBadge.textContent = availableLoads.length;
+        mobBadge.textContent = list.length;
         mobBadge.style.display = 'inline-block';
       }
 
-      container.innerHTML = filtered.map(o => {
+      container.innerHTML = list.map(o => {
         const mapsUrl = (typeof I18n !== 'undefined' && I18n.getGoogleMapsUrl)
           ? I18n.getGoogleMapsUrl(o.pickupLocation, o.dropLocation)
           : `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(o.pickupLocation || '')}&destination=${encodeURIComponent(o.dropLocation || '')}`;
@@ -683,8 +680,8 @@
                 </div>
 
                 <div style="margin-top: 10px;">
-                  <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">📍 ${escapeHtml(o.pickupLocation || '')}</div>
-                  <div style="color: var(--emerald-light); font-weight: 800; font-size: 1.1rem; margin: 3px 0;">⬇️ ${escapeHtml(o.dropLocation || '')}</div>
+                  <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">📍 ${escapeHtml(o.pickupLocation || o.originHub || o.origin || 'Origin')}</div>
+                  <div style="color: var(--emerald-light); font-weight: 800; font-size: 1.1rem; margin: 3px 0;">🏁 ${escapeHtml(o.dropLocation || o.destinationHub || o.destination || 'Destination')}</div>
                 </div>
 
                 <div class="spec-tag-list" style="margin-top: 6px;">${specialBadges.join('')}</div>
@@ -737,9 +734,15 @@
         renderFleetPills();
 
         // Fetch Dashboard Data
-        const dash = await api.getDriverDashboard();
+        const dash = await api.getDriverDashboard().catch(() => ({}));
         activeJob = dash.currentJob || dash.activeOrder || dash.activeJob || null;
-        availableLoads = dash.availableOrders || [];
+        availableLoads = dash.availableOrders || dash.availableLoads || [];
+        if (!availableLoads || availableLoads.length === 0) {
+          availableLoads = await api.getAvailableOrders().catch(() => []);
+        }
+        if (!activeJob) {
+          activeJob = await api.getCurrentJob().catch(() => null);
+        }
 
         const elKpiCargo = document.getElementById('kpi-driver-cargo');
         if (elKpiCargo) {
@@ -749,8 +752,7 @@
         renderActiveJob();
         renderAvailableLoads();
       } catch (err) {
-        console.error('Driver deck load error:', err);
-        throw err;
+        console.warn('Driver deck data load notice:', err);
       }
     }
 
