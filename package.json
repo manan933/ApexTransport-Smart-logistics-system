@@ -1,0 +1,22 @@
+{
+  "name": "apextransport",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manan933/ApexTransport-Smart-logistics-system.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/manan933/ApexTransport-Smart-logistics-system/issues"
+  },
+  "homepage": "https://github.com/manan933/ApexTransport-Smart-logistics-system#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
